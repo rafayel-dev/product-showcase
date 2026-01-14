@@ -1,0 +1,59 @@
+import { Card as AntCard, Button, Rate } from "antd";
+import { FiPlus } from "react-icons/fi";
+
+/* ================= TYPES ================= */
+interface ProductCardProps {
+  title: string;
+  image: string;
+  rating: number;
+  price: number;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({
+  title,
+  image,
+  rating,
+  price,
+}) => (
+  <AntCard
+    hoverable
+    className="relative transition-all! duration-300! border! border-violet-500/50! overflow-hidden! rounded-lg!"
+    cover={
+      <div className="aspect-square overflow-hidden">
+        <img alt={title} src={image} className="object-cover" />
+        <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
+          15% Off
+        </div>
+      </div>
+    }
+  >
+    <div className="flex items-center justify-between mb-1">
+      <Rate
+        allowHalf
+        defaultValue={rating}
+        disabled
+        style={{ fontSize: "16px" }}
+      />
+      <div className="text-lg font-bold text-black font-nunito">${price}</div>
+    </div>
+    <h5 className="text-xl font-bold text-gray-900 font-nunito">{title}</h5>
+    <div className="flex justify-between items-center">
+      <Button
+        type="primary"
+        className="bg-violet-500! hover:bg-violet-600! font-bold!"
+      >
+        <span className="font-nunito">Buy Now</span>
+      </Button>
+      <Button
+        shape="circle"
+        className="w-8! h-8! bg-black! text-white!
+             hover:bg-gray-700!
+             flex! items-center! justify-center! border-violet-600!"
+      >
+        <FiPlus size={22} />
+      </Button>
+    </div>
+  </AntCard>
+);
+
+export default ProductCard;
