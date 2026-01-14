@@ -1,5 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import 'tailwindcss';
 
+body {
+  font-family: 'Nunito', sans-serif;
+}
+
+.font-nunito {
+  font-family: 'Nunito', sans-serif !important;
+}
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -11,15 +19,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #38bdf8;
+  background: #8E51FF;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0ea5e9;
+  background: #7f3bff;
 }
 
 body::selection {
-  background: #0ea5e9;
+  background: #8E51FF;
   color: white;
 }
