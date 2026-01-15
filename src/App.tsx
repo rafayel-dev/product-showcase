@@ -1,13 +1,18 @@
 import { Header, Footer } from './layouts';
 import { HomePage } from './pages';
+import { CartProvider } from './context/CartContext';
+import CartDrawer from './components/Cart/CartDrawer';
 
 function App() {
   return (
-    <div>
-      <Header />
-      <HomePage />
-      <Footer />
-    </div>
+    <CartProvider>
+      <div>
+        <Header />
+        <HomePage />
+        <Footer />
+        <CartDrawer />
+      </div>
+    </CartProvider>
   );
 }
 

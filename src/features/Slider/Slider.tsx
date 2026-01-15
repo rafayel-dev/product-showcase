@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { Carousel } from "antd";
 import type { Slide } from "../../types";
 
 interface SliderProps {
@@ -6,22 +6,9 @@ interface SliderProps {
 }
 
 const Slider: React.FC<SliderProps> = ({ slides }) => {
-  const [currentSlide, setCurrentSlide] = useState<number>(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [currentSlide, slides.length]);
-
   return (
-    <div className="relative w-full overflow-hidden">
-      <div
-        className="flex transition-transform duration-500"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-      >
+    <div className="relative w-full overflow-hidden object-cover rounded-lg">
+      <Carousel autoplay>
         {slides.map((slide, index) => (
           <img
             key={index}
@@ -30,7 +17,7 @@ const Slider: React.FC<SliderProps> = ({ slides }) => {
             className="w-full shrink-0"
           />
         ))}
-      </div>
+      </Carousel>
     </div>
   );
 };

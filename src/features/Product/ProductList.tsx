@@ -8,15 +8,10 @@ interface ProductListProps {
 
 const ProductList: React.FC<ProductListProps> = ({ products }) => {
   return (
-    <Row gutter={[24, 24]} className="mt-2">
+    <Row gutter={[24, 24]} className="mt-4">
       {products.map((product) => (
         <Col xs={24} sm={12} md={8} lg={{ flex: '0 0 20%' }} key={product.id}>
-          <ProductCard
-            title={product.title}
-            image={product.image}
-            rating={product.rating}
-            price={product.price}
-          />
+          <ProductCard product={product} />
         </Col>
       ))}
     </Row>
