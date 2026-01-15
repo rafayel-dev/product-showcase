@@ -1,11 +1,11 @@
 import React, { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { CartItem, Product } from '../types';
+import type { CartItem } from '../types';
 
 interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
-  addToCart: (product: Product) => void;
+  addToCart: (product: CartItem) => void;
   removeFromCart: (productId: number) => void;
   toggleCart: () => void;
   openCart: () => void;
@@ -20,15 +20,25 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (itemToAdd: CartItem) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      const existingItem = prevItems.find(
+        (item) =>
+          item.id === itemToAdd.id &&
+          item.selectedSize === itemToAdd.selectedSize &&
+          item.selectedColor === itemToAdd.selectedColor
+      );
+
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === itemToAdd.id &&
+          item.selectedSize === itemToAdd.selectedSize &&
+          item.selectedColor === itemToAdd.selectedColor
+            ? { ...item, quantity: item.quantity + itemToAdd.quantity }
+            : item
         );
       } else {
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, itemToAdd];
       }
     });
   };

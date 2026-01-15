@@ -44,7 +44,7 @@ const CheckoutPage: React.FC = () => {
   const deliveryArea = useWatch("deliveryArea", form);
 
   const COUPONS: Record<string, { type: "percent" | "flat"; value: number }> = {
-    SAVE10: { type: "percent", value: 10 },
+    SAVE15: { type: "percent", value: 15 },
     WELCOME50: { type: "flat", value: 50 },
   };
 
@@ -72,7 +72,7 @@ const CheckoutPage: React.FC = () => {
   const handlePlaceOrder = (values: any) => {
     toast.success("অর্ডার সফলভাবে প্লেস করা হয়েছে 🎉");
     clearCart();
-    navigate("/OrderSuccessPage", {
+    navigate("/order-success", {
       state: {
         orderId: "ORD" + Date.now(),
         total: totalAmount,
@@ -102,7 +102,7 @@ const CheckoutPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-gray-50">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <Title level={2}>Checkout</Title>
         <Text className="ml-2!" type="secondary">
@@ -121,7 +121,7 @@ const CheckoutPage: React.FC = () => {
         >
           <Row gutter={[24, 24]}>
             {/* ================= ORDER SUMMARY ================= */}
-            <Col xs={24} md={14}>
+            <Col xs={24} md={12}>
               <Card title="🧾 Order Summary" bordered={false}>
                 {cartItems.map((item) => (
                   <div
@@ -129,7 +129,10 @@ const CheckoutPage: React.FC = () => {
                     className="flex justify-between items-start gap-2"
                   >
                     <div className="flex-1 min-w-0">
-                      <Text strong className="block truncate">
+                      <Text
+                        strong
+                        className="block truncate md:whitespace-normal md:line-clamp-2"
+                      >
                         {item.title}
                       </Text>
                       <Text type="secondary" className="text-xs">
@@ -145,13 +148,13 @@ const CheckoutPage: React.FC = () => {
 
                 <Divider />
 
-                <Form.Item name="coupon" className="">
-                  <Input placeholder="Promo Code (e.g. SAVE10)" />
+                <Form.Item name="coupon" className="w-1/3">
+                  <Input placeholder="Promo Code" />
                 </Form.Item>
 
                 {couponCode &&
                   (COUPONS[couponCode] ? (
-                    <Text type="success">
+                    <Text type="success" className="text-violet-500!">
                       ✔ Coupon applied (-{formatCurrency(discount)})
                     </Text>
                   ) : (
@@ -161,7 +164,7 @@ const CheckoutPage: React.FC = () => {
                 {discount > 0 && (
                   <div className="flex justify-between">
                     <Text strong>Discount</Text>
-                    <Text strong type="success">
+                    <Text strong type="success" className="text-violet-500!">
                       - {formatCurrency(discount)}
                     </Text>
                   </div>
@@ -180,13 +183,15 @@ const CheckoutPage: React.FC = () => {
                 <Divider />
 
                 <div className="flex justify-between items-center">
-                  <Text strong>Total Amount</Text>
+                  <Text strong className="text-lg!">
+                    Total Amount
+                  </Text>
                   <Text strong className="text-lg!">
                     {formatCurrency(totalAmount)}
                   </Text>
                 </div>
 
-                <Tag color="green">
+                <Tag color="violet" className="mt-2!">
                   <span className="text-[10px] md:text-xs lg:text-xs">
                     ✔ Cash on Delivery available all over Bangladesh
                   </span>
@@ -195,7 +200,7 @@ const CheckoutPage: React.FC = () => {
             </Col>
 
             {/* ================= SHIPPING & PAYMENT ================= */}
-            <Col xs={24} md={10}>
+            <Col xs={24} md={12}>
               <Card
                 title="📦 Shipping & Payment"
                 bordered={false}
@@ -236,12 +241,18 @@ const CheckoutPage: React.FC = () => {
                   <Input.TextArea rows={3} placeholder="বাসা/রোড/এলাকা, জেলা" />
                 </Form.Item>
 
+                {/* ================= DELIVERY INFO ================= */}
+                <div className="mb-2 flex flex-col">
+                  <Text>🚚 ঢাকা: 1–2 দিন</Text>
+                  <Text>📦 ঢাকার বাইরে: 2–4 দিন</Text>
+                </div>
+
                 {/* ================= PAYMENT METHOD ================= */}
                 <Form.Item label="Payment Method" name="paymentMethod">
                   <Radio.Group className="w-full">
                     <Radio value="cod">
                       Cash on Delivery
-                      <Tag color="green" className="ml-2">
+                      <Tag color="violet" className="ml-2!">
                         Popular
                       </Tag>
                     </Radio>
@@ -257,9 +268,9 @@ const CheckoutPage: React.FC = () => {
                       showIcon
                       className="mb-3"
                       message="Payment Instruction"
-                      description={`অনুগ্রহ করে ${paymentMethod} এ ${formatCurrency(
+                      description={`অনুগ্রহ করে 01751876070 Personal ${paymentMethod} এ ${formatCurrency(
                         totalAmount
-                      )} পাঠান এবং Transaction ID দিন`}
+                      )} ক্যাশ ইন অথবা সেন্ড মানি করুন এবং Transaction ID দিন`}
                     />
 
                     <Form.Item
