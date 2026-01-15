@@ -7,15 +7,16 @@ interface SliderProps {
 
 const Slider: React.FC<SliderProps> = ({ slides }) => {
   return (
-    <div className="relative w-full overflow-hidden object-cover rounded-lg">
-      <Carousel autoplay>
+    <div className="relative w-full overflow-hidden rounded-lg">
+      <Carousel autoplay dots={false}>
         {slides.map((slide, index) => (
-          <img
-            key={index}
-            src={slide.image}
-            alt={slide.alt}
-            className="w-full shrink-0"
-          />
+          <div key={index}>
+            <img
+              src={slide.image}
+              alt={slide.alt}
+              className="w-full h-15 md:h-75 object-cover"
+            />
+          </div>
         ))}
       </Carousel>
     </div>

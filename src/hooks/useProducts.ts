@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Product } from '../types';
-import { allProducts } from '../data';
+import { getProducts } from '../services/productService'; // Import the service
 
 const initialLoadCount = 20;
 const productsPerLoad = 10;
@@ -11,8 +11,9 @@ export const useProducts = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   useEffect(() => {
-    setDisplayedProducts(allProducts.slice(0, initialLoadCount));
-    setHasMore(allProducts.length > initialLoadCount);
+    const allProductsData = getProducts(); // Use the service
+    setDisplayedProducts(allProductsData.slice(0, initialLoadCount));
+    setHasMore(allProductsData.length > initialLoadCount);
   }, []);
 
   const loadMoreProducts = useCallback(() => {
@@ -20,8 +21,9 @@ export const useProducts = () => {
 
     setLoading(true);
     setTimeout(() => {
+      const allProductsData = getProducts(); // Use the service again
       const currentLength = displayedProducts.length;
-      const nextProducts = allProducts.slice(
+      const nextProducts = allProductsData.slice(
         currentLength,
         currentLength + productsPerLoad
       );
@@ -30,7 +32,7 @@ export const useProducts = () => {
         ...prevProducts,
         ...nextProducts,
       ]);
-      setHasMore(currentLength + nextProducts.length < allProducts.length);
+      setHasMore(currentLength + nextProducts.length < allProductsData.length);
       setLoading(false);
     }, 1000);
   }, [loading, hasMore, displayedProducts]);

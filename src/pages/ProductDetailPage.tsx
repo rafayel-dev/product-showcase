@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { allProducts } from "../data";
+import { getProductById } from "../services/productService"; // Import the service
 import type { CartItem, Product } from "../types";
 import {
   Card,
@@ -43,13 +43,16 @@ const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      const found = allProducts.find((p) => p.id === Number(id));
+      const found = getProductById(Number(id)); // Use the service
       if (found) {
         setProduct(found);
         setSelectedImage(found.image);
+      } else {
+        // Handle case where product is not found, e.g., navigate to a 404 page
+        navigate("/404"); // Assuming you have a 404 route
       }
     }
-  }, [id]);
+  }, [id, navigate]);
 
   if (!product) return null;
 

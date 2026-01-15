@@ -85,7 +85,7 @@ const CheckoutPage: React.FC = () => {
   /* ================= EMPTY CART ================= */
   if (!cartItems.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md text-center">
           <Empty className="pb-2!" description="আপনার কার্ট খালি" />
           <Button

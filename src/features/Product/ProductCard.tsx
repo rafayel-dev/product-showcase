@@ -1,8 +1,10 @@
-import { Card as AntCard, Button, Rate } from "antd";
-import { FiPlus } from "react-icons/fi";
+import { Card as AntCard, Button, Rate, Tooltip } from "antd";
+import { FiCheck, FiPlus } from "react-icons/fi";
 import { useCart } from "../../hooks/useCart";
 import type { CartItem, Product } from "../../types";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
+import toast from "../../utils/toast";
+import { useState } from "react";
 
 /* ================= TYPES ================= */
 interface ProductCardProps {
@@ -12,29 +14,32 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { id, title, image, rating, price } = product;
   const { addToCart } = useCart();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
+  const [added, setAdded] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the Link from being triggered
+    e.stopPropagation();
     const itemToAdd: CartItem = {
       ...product,
-      selectedSize: "M", // Default size
-      selectedColor: "Default", // Default color
+      selectedSize: "M",
+      selectedColor: "Default",
       quantity: 1,
     };
+    setAdded(true);
     addToCart(itemToAdd);
+    toast.success("পণ্য কার্টে যোগ হয়েছে 🛒");
   };
 
   const handleBuyNow = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the Link from being triggered
+    e.stopPropagation();
     const itemToAdd: CartItem = {
       ...product,
-      selectedSize: "M", // Default size
-      selectedColor: "Default", // Default color
+      selectedSize: "M",
+      selectedColor: "Default",
       quantity: 1,
     };
-    addToCart(itemToAdd); // Add to cart first
-    navigate("/checkout"); // Then navigate to checkout
+    addToCart(itemToAdd);
+    navigate("/checkout");
   };
 
   return (
@@ -74,15 +79,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         >
           <span className="font-nunito">Buy Now</span>
         </Button>
-        <Button
-          shape="circle"
-          className="w-8! h-8! bg-black! text-white!
-                 hover:bg-gray-900!
-                 flex! items-center! justify-center! border-violet-600!"
-          onClick={handleAddToCart}
-        >
-          <FiPlus size={22} />
-        </Button>
+        <Tooltip title={added ? "Already added" : "Add to cart"}>
+          <Button
+            shape="circle"
+            className={`w-8! h-8!
+    flex! items-center! justify-center!
+    transition-all duration-300
+    ${
+      added
+        ? "bg-violet-500! text-white! cursor-not-allowed! border-violet-500!"
+        : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
+    }`}
+            onClick={handleAddToCart}
+          >
+            {added ? <FiCheck size={20} /> : <FiPlus size={22} />}
+          </Button>
+        </Tooltip>
       </div>
     </AntCard>
   );

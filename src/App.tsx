@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer } from './layouts';
-import { CheckoutPage, HomePage, OrderSuccessPage, PrivacyPolicyPage, TermsOfServicePage } from './pages';
-import ProductDetailPage from './pages/ProductDetailPage';
+import { CheckoutPage, HomePage, OrderSuccessPage, PrivacyPolicyPage, ProductDetailPage, TermsOfServicePage } from './pages';
 import { CartProvider } from './context/CartContext';
-import CartDrawer from './components/Cart/CartDrawer';
+import { CartDrawer } from './components';
 import WhatsAppFloat from './components/whatsapp/WhatsAppFloat';
 
 function App() {
