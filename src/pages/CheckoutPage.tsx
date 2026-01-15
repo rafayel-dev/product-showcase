@@ -241,12 +241,6 @@ const CheckoutPage: React.FC = () => {
                   <Input.TextArea rows={3} placeholder="বাসা/রোড/এলাকা, জেলা" />
                 </Form.Item>
 
-                {/* ================= DELIVERY INFO ================= */}
-                <div className="mb-2 flex flex-col">
-                  <Text>🚚 ঢাকা: 1–2 দিন</Text>
-                  <Text>📦 ঢাকার বাইরে: 2–4 দিন</Text>
-                </div>
-
                 {/* ================= PAYMENT METHOD ================= */}
                 <Form.Item label="Payment Method" name="paymentMethod">
                   <Radio.Group className="w-full">

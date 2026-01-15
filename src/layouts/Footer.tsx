@@ -13,11 +13,11 @@ const Footer = () => {
 
         <div className="mt-4">
 
-          <a href="#" className="text-gray-400 hover:text-white mx-2 transition-all duration-300">Privacy Policy</a>
+          <a href="/privacy-policy" className="text-gray-400 hover:text-white mx-2 transition-all duration-300">Privacy Policy</a>
 
           <span className="text-gray-400">|</span>
 
-          <a href="#" className="text-gray-400 hover:text-white mx-2 transition-all duration-300">Terms of Service</a>
+          <a href="/terms-of-service" className="text-gray-400 hover:text-white mx-2 transition-all duration-300">Terms of Service</a>
 
         </div>
 

@@ -119,7 +119,7 @@ Price: ${formatBDT(discountedPrice * qty)}
                   <div className="relative w-full aspect-square overflow-hidden rounded-lg">
                     <Image
                       src={selectedImage}
-                      className="w-full! h-full! object-cover"
+                      className="w-full! h-full! object-cover!"
                     />
                   </div>
 
@@ -279,6 +279,107 @@ Price: ${formatBDT(discountedPrice * qty)}
               </Card>
             </Col>
           </Row>
+
+          {/* ================= FULL PRODUCT DETAILS ================= */}
+          <div className="mt-12">
+            <Card bordered={false}>
+              <Title level={3}>📄 Product Details</Title>
+              <Divider />
+
+              <Row gutter={[24, 24]}>
+                {/* DESCRIPTION */}
+                <Col xs={24} md={14}>
+                  <Title level={4}>Description</Title>
+                  <Paragraph className="text-gray-700 leading-relaxed">
+                    {product.description ||
+                      "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
+                  </Paragraph>
+
+                  <Paragraph className="text-gray-700">
+                    ✔ 100% Original Product
+                    <br />
+                    ✔ Quality Checked
+                    <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
+                  </Paragraph>
+                </Col>
+
+                {/* SPECIFICATIONS */}
+                <Col xs={24} md={10}>
+                  <Title level={4}>Specifications</Title>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <Text strong className="text-gray-700!" type="secondary">
+                        Brand
+                      </Text>
+                      <Text>Escape</Text>
+                    </div>
+
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <Text strong className="text-gray-700!" type="secondary">
+                        Available Sizes
+                      </Text>
+                      <Text>S, M, L</Text>
+                    </div>
+
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <Text strong className="text-gray-700!" type="secondary">
+                        Available Colors
+                      </Text>
+                      <Text>Black, Blue</Text>
+                    </div>
+
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <Text strong className="text-gray-700!" type="secondary">
+                        Material
+                      </Text>
+                      <Text>Premium Fabric</Text>
+                    </div>
+
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <Text strong className="text-gray-700!" type="secondary">
+                        Country of Origin
+                      </Text>
+                      <Text>Bangladesh</Text>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+              <Divider />
+
+              {/* DELIVERY INFO */}
+              <Row gutter={[24, 24]}>
+                <Col xs={24} md={12}>
+                  <Title level={4}>🚚 Delivery Information</Title>
+                  <Paragraph>
+                    • ঢাকা শহরের ভিতরে: 1–2 কর্মদিবস
+                    <br />
+                    • ঢাকার বাইরে: 2–4 কর্মদিবস
+                    <br />• Cash on Delivery available
+                  </Paragraph>
+                </Col>
+
+                <Col xs={24} md={12}>
+                  <Title level={4}>↩ Return Policy</Title>
+                  <Paragraph>
+                    • ৭ দিনের মধ্যে রিটার্ন সুবিধা
+                    <br />
+                    • পণ্য ব্যবহার না করা থাকতে হবে
+                    <br />• রিটার্ন চার্জ প্রযোজ্য হতে পারে
+                  </Paragraph>
+                </Col>
+              </Row>
+
+              <Divider />
+
+              {/* REVIEWS PLACEHOLDER */}
+              <Title level={4}>⭐ Customer Reviews</Title>
+              <Paragraph type="secondary">
+                এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
+              </Paragraph>
+            </Card>
+          </div>
         </div>
       </div>
     </>
