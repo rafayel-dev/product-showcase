@@ -2,6 +2,7 @@ import { BsCart3 } from 'react-icons/bs';
 import logo from '../assets/logo.jpg';
 import { useCart } from '../hooks/useCart';
 import { Badge } from 'antd';
+import { Link } from 'react-router-dom';
 
 
 const Header = () => {
@@ -11,9 +12,9 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-        <div className="flex items-center">
+        <Link to="/" className="flex items-center">
           <img src={logo} alt="Logo" className="h-10" />
-        </div>
+        </Link>
         <div className="flex items-center">
           <Badge count={totalItems} showZero>
             <BsCart3

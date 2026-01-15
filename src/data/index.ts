@@ -30,4 +30,7 @@ export const allProducts: Product[] = Array.from({ length: 50 }, (_, i) => ({
       : product00,
   rating: Math.floor(Math.random() * 3) + 3,
   price: parseFloat((Math.random() * (200 - 50) + 50).toFixed(2)),
+  description: `This is a detailed description for Product ${
+    i + 1
+  }. It highlights the key features and benefits of the product, showcasing its quality and utility. Our product offers an exceptional user experience with its robust design and innovative functionalities. Get yours today and experience the difference!`,
 }));

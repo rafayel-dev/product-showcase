@@ -2,6 +2,7 @@ import { Drawer, Button, Space, Typography, InputNumber } from 'antd';
 import { useCart } from '../../hooks/useCart';
 import { FiX } from 'react-icons/fi';
 import type { CartItem } from '../../types';
+import { Link } from 'react-router-dom';
 
 const { Text } = Typography;
 
@@ -58,9 +59,11 @@ const CartDrawer: React.FC = () => {
             <Text strong>Total:</Text>
             <Text strong>${totalPrice.toFixed(2)}</Text>
           </div>
-          <Button type="primary" size="large" block className="mt-4! bg-violet-500! hover:bg-violet-600!" onClick={() => alert('Proceeding to Checkout!')}>
-            Proceed to Checkout
-          </Button>
+          <Link to="/checkout" onClick={closeCart}>
+            <Button type="primary" size="large" block className="mt-4! bg-violet-500! hover:bg-violet-600!">
+              Proceed to Checkout
+            </Button>
+          </Link>
         </>
       )}
     </Drawer>
