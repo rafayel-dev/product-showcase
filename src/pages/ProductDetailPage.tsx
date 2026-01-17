@@ -39,7 +39,7 @@ const ProductDetailPage: React.FC = () => {
 
   const hasDiscount = discountPercentage > 0;
   const finalPrice = product
-    ? product.price - (product.price * discountPercentage) / 100
+    ? Math.round(product.price - (product.price * discountPercentage) / 100)
     : 0;
 
   useEffect(() => {
@@ -73,8 +73,6 @@ const ProductDetailPage: React.FC = () => {
     },
   };
 
-  const formatBDT = (amount: number) => `৳ ${amount.toLocaleString("en-BD")}`;
-
   const handleAddToCart = () => {
     addToCart({
       ...product,
@@ -98,7 +96,7 @@ Product: ${product.title}
 Size: ${size}
 Color: ${color}
 Quantity: ${qty}
-Price: ${formatBDT((hasDiscount ? finalPrice : product.price) * qty)}
+Price: ৳${(hasDiscount ? finalPrice : product.price) * qty}
 `;
     window.open(
       `https://wa.me/8801751876070?text=${encodeURIComponent(msg)}`,
@@ -162,15 +160,15 @@ Price: ${formatBDT((hasDiscount ? finalPrice : product.price) * qty)}
                   {hasDiscount ? (
                     <>
                       <Title level={3} className="text-red-500!">
-                        {formatBDT(finalPrice)}
+                        ৳{finalPrice}
                       </Title>
                       <Text delete type="secondary">
-                        {formatBDT(product.price)}
+                        ৳{product.price}
                       </Text>
                     </>
                   ) : (
                     <Title level={3} className="text-red-500!">
-                      {formatBDT(product.price)}
+                      ৳{product.price}
                     </Title>
                   )}
                 </Space>

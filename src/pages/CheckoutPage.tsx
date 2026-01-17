@@ -137,7 +137,6 @@ const CheckoutPage: React.FC = () => {
                         className="block truncate md:whitespace-normal md:line-clamp-2 pb-1"
                       >
                         {item.title}
-                        
                       </Text>
                       <Text type="secondary" className="text-sm!">
                         {formatCurrency(item.price)} x
@@ -182,7 +181,9 @@ const CheckoutPage: React.FC = () => {
 
                 {discount > 0 && (
                   <div className="flex justify-between">
-                    <Text strong className="text-violet-500!">Discount</Text>
+                    <Text strong className="text-violet-500!">
+                      Discount
+                    </Text>
                     <Text strong type="success" className="text-violet-500!">
                       - {formatCurrency(discount)}
                     </Text>
@@ -255,21 +256,23 @@ const CheckoutPage: React.FC = () => {
                 >
                   <Select
                     showSearch
-                    placeholder="জেলা নির্বাচন করুন"
                     size="large"
+                    placeholder="জেলা নির্বাচন করুন"
+                    virtual={false}
+                    getPopupContainer={(node) => node.parentElement!}
                     optionFilterProp="children"
-                    onChange={(value) => {
-                      form.setFieldsValue({
-                        deliveryArea: value === "Dhaka" ? "dhaka" : "outside",
-                      });
-                    }}
                     filterOption={(input, option) =>
                       (option?.value as string)
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
+                    onChange={(value) => {
+                      form.setFieldsValue({
+                        deliveryArea: value === "Dhaka" ? "dhaka" : "outside",
+                      });
+                    }}
                   >
-                    {bangladeshDistricts.map((item: string) => (
+                    {bangladeshDistricts.map((item) => (
                       <Select.Option key={item} value={item}>
                         {item}
                       </Select.Option>
@@ -315,7 +318,7 @@ const CheckoutPage: React.FC = () => {
                     <Alert
                       type="info"
                       showIcon
-                      className="mb-3"
+                      className="mb-3!"
                       message="Payment Instruction"
                       description={`অনুগ্রহ করে 01751876070 Personal ${paymentMethod} এ ${formatCurrency(
                         totalAmount

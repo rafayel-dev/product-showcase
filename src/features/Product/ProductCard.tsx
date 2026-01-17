@@ -4,7 +4,6 @@ import { useCart } from "../../hooks/useCart";
 import type { CartItem, Product } from "../../types";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "../../utils/toast";
-import { useState } from "react";
 
 /* ================= TYPES ================= */
 interface ProductCardProps {
@@ -13,17 +12,16 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { id, title, image, rating, price } = product;
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const navigate = useNavigate();
-  const [added, setAdded] = useState(false);
+
+  const isAdded = cartItems.some((item) => item.id === id);
 
   const discountPercentage = 15; // Assuming a fixed discount for now
   const hasDiscount = discountPercentage > 0;
   const finalPrice = hasDiscount
-    ? price - (price * discountPercentage) / 100
+    ? Math.round(price - (price * discountPercentage) / 100)
     : price;
-
-  const formatBDT = (amount: number) => `৳ ${amount.toLocaleString("en-BD")}`;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -34,7 +32,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       quantity: 1,
       price: finalPrice,
     };
-    setAdded(true);
     addToCart(itemToAdd);
     toast.success("পণ্য কার্টে যোগ হয়েছে 🛒");
   };
@@ -76,15 +73,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           disabled
           style={{ fontSize: 14 }}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {hasDiscount && (
-            <span className="text-sm text-gray-400 line-through font-medium">
-              {formatBDT(price)}
-            </span>
+            <div className="text-xs font-bold text-gray-500 font-nunito line-through">
+              ৳{price}
+            </div>
           )}
-          <span className="text-lg font-bold text-black">
-            {formatBDT(finalPrice)}
-          </span>
+          <div className="text-lg font-bold text-violet-600 font-nunito">
+            ৳{finalPrice}
+          </div>
         </div>
       </div>
       <Link to={`/product/${id}`}>
@@ -100,20 +97,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         >
           <span className="font-nunito">Buy Now</span>
         </Button>
-        <Tooltip title={added ? "Already added" : "Add to cart"}>
+        <Tooltip title={isAdded ? "Already added" : "Add to cart"}>
           <Button
             shape="circle"
+            disabled={isAdded}
             className={`w-8! h-8!
     flex! items-center! justify-center!
     transition-all duration-300
     ${
-      added
+      isAdded
         ? "bg-violet-500! text-white! cursor-not-allowed! border-violet-500!"
         : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
     }`}
             onClick={handleAddToCart}
           >
-            {added ? <FiCheck size={20} /> : <FiPlus size={22} />}
+            {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
           </Button>
         </Tooltip>
       </div>
