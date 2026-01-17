@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import "tailwindcss";
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
 }
 
 .font-nunito {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
 }
 
 /* Custom Scrollbar */
@@ -19,7 +19,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8E51FF;
+  background: #8e51ff;
   border-radius: 6px;
 }
 
@@ -28,6 +28,22 @@ body {
 }
 
 body::selection {
-  background: #8E51FF;
+  background: #8e51ff;
   color: white;
 }
+
+.ant-radio-disabled + span {
+  color: rgba(0, 0, 0, 0.88) !important;
+}
+
+.ant-radio-disabled .ant-radio-inner {
+  background-color: #fff !important;
+}
+
+.ant-radio-disabled.ant-radio-checked .ant-radio-inner::after {
+  background-color: #8b5cf6 !important;
+}
+.ant-radio-disabled.ant-radio-checked .ant-radio-inner {
+  border-color: #8b5cf6 !important;
+}
+

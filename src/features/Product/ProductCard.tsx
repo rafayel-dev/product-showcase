@@ -17,6 +17,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const [added, setAdded] = useState(false);
 
+  const discountPercentage = 15; // Assuming a fixed discount for now
+  const hasDiscount = discountPercentage > 0;
+  const finalPrice = hasDiscount
+    ? price - (price * discountPercentage) / 100
+    : price;
+
+  const formatBDT = (amount: number) => `৳ ${amount.toLocaleString("en-BD")}`;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     const itemToAdd: CartItem = {
@@ -24,6 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       selectedSize: "M",
       selectedColor: "Default",
       quantity: 1,
+      price: finalPrice,
     };
     setAdded(true);
     addToCart(itemToAdd);
@@ -37,6 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       selectedSize: "M",
       selectedColor: "Default",
       quantity: 1,
+      price: finalPrice,
     };
     addToCart(itemToAdd);
     navigate("/checkout");
@@ -50,9 +60,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Link to={`/product/${id}`}>
           <div className="aspect-square overflow-hidden">
             <img alt={title} src={image} className="object-cover" />
-            <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
-              15% Off
-            </div>
+            {hasDiscount && (
+              <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
+                🔥{discountPercentage}% Off
+              </div>
+            )}
           </div>
         </Link>
       }
@@ -62,9 +74,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           allowHalf
           defaultValue={rating}
           disabled
-          style={{ fontSize: "16px" }}
+          style={{ fontSize: 14 }}
         />
-        <div className="text-lg font-bold text-black font-nunito">${price}</div>
+        <div className="flex items-center gap-2">
+          {hasDiscount && (
+            <span className="text-sm text-gray-400 line-through font-medium">
+              {formatBDT(price)}
+            </span>
+          )}
+          <span className="text-lg font-bold text-black">
+            {formatBDT(finalPrice)}
+          </span>
+        </div>
       </div>
       <Link to={`/product/${id}`}>
         <h5 className="text-xl font-bold text-gray-900 hover:text-violet-500 transition-all duration-300 font-nunito">

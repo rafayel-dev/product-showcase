@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductById } from "../services/productService"; // Import the service
+import { getProductById } from "../services/productService";
 import type { CartItem, Product } from "../types";
 import {
   Card,
@@ -35,21 +35,22 @@ const ProductDetailPage: React.FC = () => {
   const [size, setSize] = useState("M");
   const [color, setColor] = useState("Black");
   const [qty, setQty] = useState(1);
+  const discountPercentage = 15;
 
-  const discountPercent = 15;
-  const discountedPrice = product
-    ? product.price - (product.price * discountPercent) / 100
+  const hasDiscount = discountPercentage > 0;
+  const finalPrice = product
+    ? product.price - (product.price * discountPercentage) / 100
     : 0;
 
   useEffect(() => {
     if (id) {
-      const found = getProductById(Number(id)); // Use the service
+      const found = getProductById(Number(id));
       if (found) {
         setProduct(found);
         setSelectedImage(found.image);
       } else {
         // Handle case where product is not found, e.g., navigate to a 404 page
-        navigate("/404"); // Assuming you have a 404 route
+        navigate("/404");
       }
     }
   }, [id, navigate]);
@@ -61,13 +62,13 @@ const ProductDetailPage: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
-    image: [product.image],
+    image: [selectedImage],
     description: product.description,
     brand: { "@type": "Brand", name: "Your Store Name" },
     offers: {
       "@type": "Offer",
       priceCurrency: "BDT",
-      price: discountedPrice,
+      price: hasDiscount ? finalPrice : product.price,
       availability: "https://schema.org/InStock",
     },
   };
@@ -80,7 +81,7 @@ const ProductDetailPage: React.FC = () => {
       selectedSize: size,
       selectedColor: color,
       quantity: qty,
-      price: discountedPrice,
+      price: hasDiscount ? finalPrice : product.price,
     } as CartItem);
     toast.success("পণ্য কার্টে যোগ হয়েছে 🛒");
   };
@@ -97,7 +98,7 @@ Product: ${product.title}
 Size: ${size}
 Color: ${color}
 Quantity: ${qty}
-Price: ${formatBDT(discountedPrice * qty)}
+Price: ${formatBDT((hasDiscount ? finalPrice : product.price) * qty)}
 `;
     window.open(
       `https://wa.me/8801751876070?text=${encodeURIComponent(msg)}`,
@@ -127,9 +128,11 @@ Price: ${formatBDT(discountedPrice * qty)}
                   </div>
 
                   {/* FLASH SALE BADGE */}
-                  <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
-                    🔥15% Off
-                  </div>
+                  {hasDiscount && (
+                    <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
+                      🔥{discountPercentage}% Off
+                    </div>
+                  )}
                 </div>
 
                 <Space className="mt-4">
@@ -156,12 +159,20 @@ Price: ${formatBDT(discountedPrice * qty)}
                   (124 Reviews)
                 </Text>
                 <Space align="center" className="mt-2 ml-2">
-                  <Title level={3} className="text-red-500!">
-                    {formatBDT(discountedPrice)}
-                  </Title>
-                  <Text delete type="secondary">
-                    {formatBDT(product.price)}
-                  </Text>
+                  {hasDiscount ? (
+                    <>
+                      <Title level={3} className="text-red-500!">
+                        {formatBDT(finalPrice)}
+                      </Title>
+                      <Text delete type="secondary">
+                        {formatBDT(product.price)}
+                      </Text>
+                    </>
+                  ) : (
+                    <Title level={3} className="text-red-500!">
+                      {formatBDT(product.price)}
+                    </Title>
+                  )}
                 </Space>
 
                 <Space wrap className="my-3">

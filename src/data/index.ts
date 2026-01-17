@@ -9,6 +9,8 @@ import product01 from "../assets/product01.jpg";
 import product02 from "../assets/product02.webp";
 import product03 from "../assets/product03.webp";
 
+export * from './bangladeshDistricts';
+
 export const slides: Slide[] = [
   { image: image2, alt: "Slide 2" },
   { image: image3, alt: "Slide 3" },

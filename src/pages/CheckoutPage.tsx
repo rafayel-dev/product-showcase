@@ -12,11 +12,15 @@ import {
   Radio,
   Tag,
   Alert,
+  Select,
+  InputNumber,
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
 import { useWatch } from "antd/es/form/Form";
+import { bangladeshDistricts } from "../data";
+import { FiX } from "react-icons/fi";
 
 const { Title, Text } = Typography;
 
@@ -28,6 +32,8 @@ const DELIVERY_CHARGE = {
 interface CheckoutFormValues {
   fullName?: string;
   phone?: string;
+  email?: string;
+  district?: string;
   deliveryArea?: "dhaka" | "outside";
   address?: string;
   paymentMethod?: "cod" | "bkash" | "nagad";
@@ -36,7 +42,7 @@ interface CheckoutFormValues {
 }
 
 const CheckoutPage: React.FC = () => {
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [form] = Form.useForm<CheckoutFormValues>();
 
@@ -105,9 +111,6 @@ const CheckoutPage: React.FC = () => {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <Title level={2}>Checkout</Title>
-        <Text className="ml-2!" type="secondary">
-          সঠিক তথ্য দিন, আমরা দ্রুত ডেলিভারি দেব 🚚
-        </Text>
 
         <Form
           form={form}
@@ -131,12 +134,28 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <Text
                         strong
-                        className="block truncate md:whitespace-normal md:line-clamp-2"
+                        className="block truncate md:whitespace-normal md:line-clamp-2 pb-1"
                       >
                         {item.title}
+                        
                       </Text>
-                      <Text type="secondary" className="text-xs">
-                        Qty: {item.quantity}
+                      <Text type="secondary" className="text-sm!">
+                        {formatCurrency(item.price)} x
+                        <InputNumber
+                          className="ml-2! w-14!"
+                          min={1}
+                          value={item.quantity}
+                          onChange={(value: number | null) =>
+                            updateQuantity(item.id, value || 1)
+                          }
+                        />
+                        <Button
+                          type="text"
+                          className="ml-2!"
+                          danger
+                          icon={<FiX />}
+                          onClick={() => removeFromCart(item.id)}
+                        />
                       </Text>
                     </div>
 
@@ -163,7 +182,7 @@ const CheckoutPage: React.FC = () => {
 
                 {discount > 0 && (
                   <div className="flex justify-between">
-                    <Text strong>Discount</Text>
+                    <Text strong className="text-violet-500!">Discount</Text>
                     <Text strong type="success" className="text-violet-500!">
                       - {formatCurrency(discount)}
                     </Text>
@@ -201,10 +220,13 @@ const CheckoutPage: React.FC = () => {
 
             {/* ================= SHIPPING & PAYMENT ================= */}
             <Col xs={24} md={12}>
+              <Text className="ml-2!" type="secondary">
+                সঠিক তথ্য দিন, আমরা দ্রুত ডেলিভারি দেব 🚚
+              </Text>
               <Card
                 title="📦 Shipping & Payment"
                 bordered={false}
-                className="md:sticky md:top-6"
+                className="md:sticky"
               >
                 <Form.Item
                   label="Full Name"
@@ -226,10 +248,43 @@ const CheckoutPage: React.FC = () => {
                   <Input placeholder="ইমেইল ঠিকানা দিন" />
                 </Form.Item>
 
-                <Form.Item label="Delivery Area" name="deliveryArea">
-                  <Radio.Group>
-                    <Radio value="dhaka">Inside Dhaka</Radio>
-                    <Radio value="outside">Outside Dhaka</Radio>
+                <Form.Item
+                  label="District"
+                  name="district"
+                  rules={[{ required: true, message: "জেলা নির্বাচন করুন" }]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="জেলা নির্বাচন করুন"
+                    size="large"
+                    optionFilterProp="children"
+                    onChange={(value) => {
+                      form.setFieldsValue({
+                        deliveryArea: value === "Dhaka" ? "dhaka" : "outside",
+                      });
+                    }}
+                    filterOption={(input, option) =>
+                      (option?.value as string)
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  >
+                    {bangladeshDistricts.map((item: string) => (
+                      <Select.Option key={item} value={item}>
+                        {item}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item name="deliveryArea" rules={[{ required: true }]}>
+                  <Radio.Group disabled>
+                    <Radio value="dhaka">
+                      Inside Dhaka {formatCurrency(DELIVERY_CHARGE.dhaka)}
+                    </Radio>
+                    <Radio value="outside">
+                      Outside Dhaka {formatCurrency(DELIVERY_CHARGE.outside)}
+                    </Radio>
                   </Radio.Group>
                 </Form.Item>
 
