@@ -10,11 +10,11 @@ const Slider: React.FC<SliderProps> = ({ slides }) => {
     <div className="relative w-full overflow-hidden rounded-lg">
       <Carousel autoplay dots={false}>
         {slides.map((slide, index) => (
-          <div key={index}>
+          <div key={index} className="w-full aspect-40/9 overflow-hidden">
             <img
               src={slide.image}
               alt={slide.alt}
-              className="w-full h-18 md:h-94 object-cover"
+              className="w-full h-full object-cover"
             />
           </div>
         ))}

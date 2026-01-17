@@ -2,7 +2,7 @@ import { Card, Typography, Divider } from "antd";
 
 const { Title, Paragraph, Text } = Typography;
 
-const TermsOfServicePage = () => {
+const TermsOfServicePage: React.FC = () => {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">

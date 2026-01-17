@@ -1,6 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer } from './layouts';
-import { CheckoutPage, HomePage, OrderSuccessPage, PrivacyPolicyPage, ProductDetailPage, TermsOfServicePage } from './pages';
+import {
+  AboutPage,
+  CheckoutPage,
+  HomePage,
+  OrderSuccessPage,
+  PrivacyPolicyPage,
+  ProductDetailPage,
+  TermsOfServicePage,
+} from "./pages";
 import { CartProvider } from './context/CartContext';
 import { CartDrawer } from './components';
 import WhatsAppFloat from './components/whatsapp/WhatsAppFloat';
@@ -18,6 +26,7 @@ function App() {
             <Route path="/order-success" element={<OrderSuccessPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
           <Footer />
           <CartDrawer />

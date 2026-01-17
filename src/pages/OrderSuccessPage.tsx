@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
-const OrderSuccessPage = () => {
+const OrderSuccessPage: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
