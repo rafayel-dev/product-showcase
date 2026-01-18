@@ -17,3 +17,12 @@ export interface CartItem extends Product {
   selectedSize: string;
   selectedColor: string;
 }
+
+
+export interface Review {
+  name: string;
+  orderId: string;
+  rating: number;
+  comment: string;
+  date: string;
+}

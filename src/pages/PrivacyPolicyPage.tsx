@@ -14,7 +14,7 @@ const PrivacyPolicyPage: React.FC = () => {
 
           <Divider />
 
-          <Paragraph>
+          <Paragraph className="font-nunito">
             <strong>Your Store Name</strong> আপনার ব্যক্তিগত তথ্যের গোপনীয়তা
             রক্ষায় প্রতিশ্রুতিবদ্ধ। এই Privacy Policy ব্যাখ্যা করে আমরা কীভাবে
             আপনার তথ্য সংগ্রহ, ব্যবহার এবং সুরক্ষা করি।
@@ -24,46 +24,46 @@ const PrivacyPolicyPage: React.FC = () => {
           <Paragraph>
             আমরা নিম্নলিখিত তথ্য সংগ্রহ করতে পারি:
           </Paragraph>
-          <ul className="list-disc pl-6">
+          <ul className="list-disc pl-6 font-nunito">
             <li>নাম, মোবাইল নাম্বার, ইমেইল ঠিকানা</li>
             <li>ডেলিভারি ঠিকানা</li>
             <li>অর্ডার এবং পেমেন্ট সংক্রান্ত তথ্য</li>
           </ul>
 
-          <Title level={4} className="mt-4">2. How We Use Your Information</Title>
+          <Title level={4} className="mt-4 font-nunito">2. How We Use Your Information</Title>
           <Paragraph>
             আপনার তথ্য ব্যবহার করা হয়:
           </Paragraph>
-          <ul className="list-disc pl-6">
+          <ul className="list-disc pl-6 font-nunito">
             <li>অর্ডার প্রসেস ও ডেলিভারির জন্য</li>
             <li>কাস্টমার সাপোর্ট প্রদানের জন্য</li>
             <li>অর্ডার আপডেট ও নোটিফিকেশন পাঠাতে</li>
           </ul>
 
-          <Title level={4} className="mt-4">3. Data Security</Title>
+          <Title level={4} className="mt-4 font-nunito">3. Data Security</Title>
           <Paragraph>
             আমরা আপনার তথ্য সুরক্ষার জন্য যথাযথ প্রযুক্তিগত ও প্রশাসনিক ব্যবস্থা গ্রহণ করি।
             আপনার তথ্য তৃতীয় পক্ষের কাছে বিক্রি করা হয় না।
           </Paragraph>
 
-          <Title level={4} className="mt-4">4. Cash on Delivery & Payments</Title>
+          <Title level={4} className="mt-4 font-nunito">4. Cash on Delivery & Payments</Title>
           <Paragraph>
             Cash on Delivery (COD), bKash, Nagad সহ অনুমোদিত পেমেন্ট মাধ্যম ব্যবহার করা হয়।
             পেমেন্ট সংক্রান্ত সংবেদনশীল তথ্য আমরা সংরক্ষণ করি না।
           </Paragraph>
 
-          <Title level={4} className="mt-4">5. Your Consent</Title>
+          <Title level={4} className="mt-4 font-nunito">5. Your Consent</Title>
           <Paragraph>
             আমাদের ওয়েবসাইট ব্যবহার করার মাধ্যমে আপনি এই Privacy Policy-তে সম্মতি প্রদান করছেন।
           </Paragraph>
 
-          <Title level={4} className="mt-4">6. Contact Us</Title>
+          <Title level={4} className="mt-4 font-nunito">6. Contact Us</Title>
           <Paragraph>
             Privacy Policy সংক্রান্ত কোনো প্রশ্ন থাকলে যোগাযোগ করুন:
             <br />
             📧 Email: support@yourstore.com  
             <br />
-            📞 Phone: 01XXXXXXXXX
+            📞 Phone: 01751876070
           </Paragraph>
         </Card>
       </div>

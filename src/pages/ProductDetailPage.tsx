@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductById } from "../services/productService";
-import type { CartItem, Product } from "../types";
+import type { CartItem, Product, Review } from "../types";
 import {
   Card,
   Image,
@@ -14,12 +14,18 @@ import {
   Tag,
   Radio,
   Divider,
+  Popover,
+  Form,
+  Input,
+  Carousel,
 } from "antd";
 import {
   MinusOutlined,
   PlusOutlined,
   WhatsAppOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
+import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
 
@@ -31,6 +37,8 @@ const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [form] = Form.useForm();
   const [selectedImage, setSelectedImage] = useState("");
   const [size, setSize] = useState("M");
   const [color, setColor] = useState("Black");
@@ -89,28 +97,94 @@ const ProductDetailPage: React.FC = () => {
     navigate("/checkout");
   };
 
+  const handleReviewSubmit = (values: any) => {
+    const newReview: Review = {
+      name: values.name,
+      orderId: values.orderId,
+      rating: values.rating,
+      comment: values.comment,
+      date: new Date().toLocaleDateString(),
+    };
+
+    setReviews((prev) => [newReview, ...prev]);
+    toast.success("আপনার রিভিউটি সাবমিট হয়েছে ❤️");
+    form.resetFields();
+  };
+
   const whatsappOrder = () => {
     const msg = `Hello, আমি এই পণ্যটি অর্ডার করতে চাই 👇
-    
-Product: ${product.title}
-Size: ${size}
-Color: ${color}
-Quantity: ${qty}
-Price: ৳${(hasDiscount ? finalPrice : product.price) * qty}
-`;
+  
+  Product: ${product.title}
+  Size: ${size}
+  Color: ${color}
+  Quantity: ${qty}
+  Price: ৳${(hasDiscount ? finalPrice : product.price) * qty}
+  `;
     window.open(
       `https://wa.me/8801751876070?text=${encodeURIComponent(msg)}`,
-      "_blank"
+      "_blank",
     );
   };
 
+  const productUrl = window.location.href; // Get current product URL
+  const productTitle = product.title;
+
+  // Facebook Share
+  const shareFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`,
+      "_blank",
+    );
+  };
+
+  // Twitter Share
+  const shareTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(productTitle)}&url=${encodeURIComponent(productUrl)}`,
+      "_blank",
+    );
+  };
+
+  // Copy Link
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(productUrl);
+      toast.success("Product link copied to clipboard!");
+    } catch (err) {
+      toast.error("Failed to copy link.");
+      console.error("Failed to copy: ", err);
+    }
+  };
+
+  const shareContent = (
+    <Space direction="vertical">
+      <Button
+        type="text"
+        icon={<FaFacebook style={{ color: "#1877f2" }} />}
+        onClick={shareFacebook}
+      >
+        Share on Facebook
+      </Button>
+      <Button
+        type="text"
+        icon={<FaTwitter style={{ color: "#1da1f2" }} />}
+        onClick={shareTwitter}
+      >
+        Share on Twitter
+      </Button>
+      <Button type="text" icon={<ShareAltOutlined />} onClick={copyLink}>
+        Copy Link
+      </Button>
+    </Space>
+  );
+
   return (
     <>
+      {" "}
       {/* SEO SCRIPT */}
       <script type="application/ld+json">
         {JSON.stringify(productSchema)}
       </script>
-
       <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           <Row gutter={[32, 32]}>
@@ -152,31 +226,69 @@ Price: ৳${(hasDiscount ? finalPrice : product.price) * qty}
             <Col xs={24} md={12}>
               <Card bordered={false}>
                 <Title level={2}>{product.title}</Title>
-                <Rate disabled allowHalf defaultValue={product.rating} />
-                <Text type="secondary" className="ml-2!">
-                  (124 Reviews)
-                </Text>
-                <Space align="center" className="mt-2 ml-2">
-                  {hasDiscount ? (
-                    <>
-                      <Title level={3} className="text-red-500!">
-                        ৳{finalPrice}
-                      </Title>
-                      <Text delete type="secondary">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                  {/* LEFT SIDE */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Rate
+                      disabled
+                      allowHalf
+                      defaultValue={product.rating}
+                      className="text-xs! sm:text-sm! md:text-base!"
+                    />
+
+                    <a href="#review">
+                      <Text
+                      type="secondary"
+                      className="text-xs md:text-sm cursor-pointer hover:underline"
+                    >
+                      (124 Reviews)
+                    </Text>
+                    </a>
+
+                    {/* SHARE BUTTON */}
+                    <Popover
+                      content={shareContent}
+                      trigger="click"
+                      placement="bottom"
+                    >
+                      <span className="hover:text-violet-600 text-xs md:text-sm cursor-pointer transition-all duration-300 flex items-center gap-1">
+                        <ShareAltOutlined />
+                        Share
+                      </span>
+                    </Popover>
+                  </div>
+
+                  {/* RIGHT SIDE (PRICE) */}
+                  <div className="flex items-center gap-2">
+                    {hasDiscount ? (
+                      <>
+                        <Title
+                          level={4}
+                          className="text-red-500! m-0! md:text-2xl!"
+                        >
+                          ৳{finalPrice}
+                        </Title>
+                        <Text delete type="secondary" className="text-sm">
+                          ৳{product.price}
+                        </Text>
+                      </>
+                    ) : (
+                      <Title
+                        level={4}
+                        className="text-red-500! m-0! md:text-2xl!"
+                      >
                         ৳{product.price}
-                      </Text>
-                    </>
-                  ) : (
-                    <Title level={3} className="text-red-500!">
-                      ৳{product.price}
-                    </Title>
-                  )}
-                </Space>
+                      </Title>
+                    )}
+                  </div>
+                </div>
 
                 <Space wrap className="my-3">
                   <Tag color="blue">Fast Delivery</Tag>
                   <Tag color="gold">Original Product</Tag>
-                  <Tag color="green">Cash on Delivery</Tag>
+                  <Tag color="green" className="font-bold">
+                    In Stock
+                  </Tag>
                 </Space>
 
                 <Paragraph>{product.description}</Paragraph>
@@ -384,12 +496,112 @@ Price: ৳${(hasDiscount ? finalPrice : product.price) * qty}
               </Row>
 
               <Divider />
+              {/* ================= CUSTOMER REVIEWS ================= */}
 
-              {/* REVIEWS PLACEHOLDER */}
-              <Title level={4}>⭐ Customer Reviews</Title>
-              <Paragraph type="secondary">
-                এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
-              </Paragraph>
+              <Title id="review" level={4}>
+                ⭐ Customer Reviews
+              </Title>
+              {/* Review List */}
+              {reviews.length === 0 ? (
+                <Paragraph type="secondary">
+                  এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
+                </Paragraph>
+              ) : (
+                <Carousel
+                  adaptiveHeight
+                  arrows
+                  slidesToShow={3}
+                  slidesToScroll={1}
+                  responsive={[
+                    {
+                      breakpoint: 1024,
+                      settings: { slidesToShow: 2 },
+                    },
+                    {
+                      breakpoint: 640,
+                      settings: { slidesToShow: 1 },
+                    },
+                  ]}
+                >
+                  {reviews.map((review, index) => (
+                    <div key={index} className="px-3">
+                      <Card className="bg-gray-50 h-full">
+                        <Space direction="vertical" size="middle">
+                          <Space align="center">
+                            <Text strong>{review.name}</Text>
+                            <Tag color="purple">Order ID: {review.orderId}</Tag>
+                          </Space>
+
+                          <Rate disabled value={review.rating} />
+
+                          <Paragraph className="mb-1 line-clamp-3">
+                            {review.comment}
+                          </Paragraph>
+
+                          <Text type="secondary" className="text-xs">
+                            {review.date}
+                          </Text>
+                        </Space>
+                      </Card>
+                    </div>
+                  ))}
+                </Carousel>
+              )}
+
+              <Divider />
+
+              {/* ================= REVIEW FORM ================= */}
+              <Title level={5}>✍️ Write a Review</Title>
+
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleReviewSubmit}
+                className="max-w-lg"
+              >
+                <Form.Item
+                  label="Your Name"
+                  name="name"
+                  rules={[{ required: true, message: "নাম লিখুন" }]}
+                >
+                  <Input placeholder="আপনার নাম" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Order ID"
+                  name="orderId"
+                  rules={[{ required: true, message: "Order ID দিন" }]}
+                >
+                  <Input placeholder="যে Order ID দিয়ে কিনেছেন" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Rating"
+                  name="rating"
+                  rules={[{ required: true, message: "Rating দিন" }]}
+                >
+                  <Rate />
+                </Form.Item>
+
+                <Form.Item
+                  label="Your Review"
+                  name="comment"
+                  rules={[{ required: true, message: "রিভিউ লিখুন" }]}
+                >
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="পণ্যের অভিজ্ঞতা লিখুন..."
+                  />
+                </Form.Item>
+
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="bg-violet-500! hover:bg-violet-600!"
+                >
+                  Submit Review
+                </Button>
+              </Form>
             </Card>
           </div>
         </div>

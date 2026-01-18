@@ -91,7 +91,7 @@ const TermsOfServicePage: React.FC = () => {
             <br />
             📧 Email: support@yourstore.com
             <br />
-            📞 Phone: 01XXXXXXXXX
+            📞 Phone: 01751876070
           </Paragraph>
         </Card>
       </div>

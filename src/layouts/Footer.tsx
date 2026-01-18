@@ -12,21 +12,21 @@ const Footer = () => {
         <div className="mt-4">
           <Link
             to="/privacy-policy"
-            className="text-gray-400 hover:text-white mx-2 transition-all duration-300"
+            className="text-gray-400 hover:text-white text-sm mx-2 transition-all duration-300"
           >
             Privacy Policy
           </Link>
           <span className="text-gray-400">|</span>
           <Link
             to="/terms-of-service"
-            className="text-gray-400 hover:text-white mx-2 transition-all duration-300"
+            className="text-gray-400 hover:text-white text-sm mx-2 transition-all duration-300"
           >
             Terms of Service
           </Link>
           <span className="text-gray-400">|</span>
           <Link
             to="/about"
-            className="text-gray-400 hover:text-white mx-2 transition-all duration-300"
+            className="text-gray-400 hover:text-white text-sm mx-2 transition-all duration-300"
           >
             About Us
           </Link>

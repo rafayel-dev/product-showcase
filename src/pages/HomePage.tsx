@@ -1,4 +1,4 @@
-import { Select, Typography, Row, Col } from "antd";
+import { Select, Typography, Row, Col, Input } from "antd";
 import ProductList from "../features/Product/ProductList";
 import LoadMoreButton from "../components/common/LoadMoreButton";
 import { slides } from "../data";
@@ -18,14 +18,9 @@ const HomePage: React.FC = () => {
       <Slider slides={slides} />
 
       {/* ================= Title and Filter Dropdown ================= */}
-      <Row
-        gutter={[12, 12]}
-        align="middle"
-        justify="space-between"
-        style={{ marginTop: 20 }}
-      >
+      <Row gutter={[12, 12]} align="middle" style={{ marginTop: 20 }}>
         {/* Title */}
-        <Col xs={24} sm={24} md={12}>
+        <Col xs={24} md={8}>
           <Title
             level={1}
             style={{
@@ -33,29 +28,27 @@ const HomePage: React.FC = () => {
               fontSize: "clamp(22px, 4vw, 32px)",
             }}
           >
-            Featured Products
+            New Arrival Products
           </Title>
         </Col>
 
-        {/* Select */}
-        <Col
-          xs={24}
-          sm={24}
-          md={12}
-          style={{ display: "flex", justifyContent: "flex-end" }}
-        >
-          <Select
-            defaultValue="all"
-            style={{
-              width: "100%",
-              maxWidth: 150,
-            }}
-          >
-            <Option value="all">All Categories</Option>
-            <Option value="womens">Women's Fashion</Option>
-            <Option value="mens">Men's Fashion</Option>
-            <Option value="fashion">Fashion</Option>
-          </Select>
+        {/* Search + Select (Right side) */}
+        <Col xs={24} md={16}>
+          <div className="flex md:flex-row md:justify-end gap-3">
+            <Input.Search
+              placeholder="Search products..."
+              allowClear
+              onSearch={(value) => console.log(value)}
+              className="md:w-64! w-50!"
+            />
+
+            <Select defaultValue="all" className="md:w-40! w-36!">
+              <Option value="all">All Categories</Option>
+              <Option value="womens">Women's Fashion</Option>
+              <Option value="mens">Men's Fashion</Option>
+              <Option value="fashion">Fashion</Option>
+            </Select>
+          </div>
         </Col>
       </Row>
 

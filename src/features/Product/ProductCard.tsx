@@ -12,12 +12,12 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { id, title, image, rating, price } = product;
-  const { addToCart, cartItems } = useCart();
+  const { addToCart, openCart, cartItems } = useCart();
   const navigate = useNavigate();
 
   const isAdded = cartItems.some((item) => item.id === id);
 
-  const discountPercentage = 15; // Assuming a fixed discount for now
+  const discountPercentage = 15;
   const hasDiscount = discountPercentage > 0;
   const finalPrice = hasDiscount
     ? Math.round(price - (price * discountPercentage) / 100)
@@ -97,22 +97,42 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         >
           <span className="font-nunito">Buy Now</span>
         </Button>
-        <Tooltip title={isAdded ? "Already added" : "Add to cart"}>
-          <Button
-            shape="circle"
-            disabled={isAdded}
-            className={`w-8! h-8!
-    flex! items-center! justify-center!
-    transition-all duration-300
-    ${
-      isAdded
-        ? "bg-violet-500! text-white! cursor-not-allowed! border-violet-500!"
-        : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
-    }`}
-            onClick={handleAddToCart}
-          >
-            {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
-          </Button>
+        <Tooltip
+          placement="top"
+          trigger="hover"
+          color="#8E51FF"
+          title={
+            isAdded ? (
+              <Button
+                type="primary"
+                size="small"
+                className="bg-violet-500! text-white!"
+                onClick={openCart}
+              >
+                View Cart
+              </Button>
+            ) : (
+              "Add to cart"
+            )
+          }
+        >
+          <span>
+            <Button
+              shape="circle"
+              disabled={isAdded}
+              className={`w-10! h-10!
+        flex! items-center! justify-center!
+        transition-all duration-300
+        ${
+          isAdded
+            ? "bg-violet-500! text-white! cursor-not-allowed! border-violet-500!"
+            : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
+        }`}
+              onClick={handleAddToCart}
+            >
+              {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
+            </Button>
+          </span>
         </Tooltip>
       </div>
     </AntCard>

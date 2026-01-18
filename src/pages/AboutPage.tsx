@@ -3,7 +3,7 @@ import { FaUsers, FaShippingFast, FaHeadset, FaCheckCircle } from "react-icons/f
 
 const AboutPage: React.FC = () => {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <header className="bg-violet-600 text-white text-center py-16 md:py-24">
         <div className="max-w-4xl mx-auto px-4">
@@ -57,7 +57,7 @@ const AboutPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
               <div className="text-center">
                 <FaCheckCircle className="text-violet-500 text-4xl mx-auto" />
-                <h3 className="text-xl font-semibold mt-4">
+                <h3 className="text-xl font-semibold mt-2!">
                   মানসম্মত পণ্য
                 </h3>
                 <p className="text-gray-600 mt-2">
@@ -66,7 +66,7 @@ const AboutPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <FaShippingFast className="text-violet-500 text-4xl mx-auto" />
-                <h3 className="text-xl font-semibold mt-4">
+                <h3 className="text-xl font-semibold mt-2!">
                   দ্রুত ডেলিভারি
                 </h3>
                 <p className="text-gray-600 mt-2">
@@ -75,7 +75,7 @@ const AboutPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <FaHeadset className="text-violet-500 text-4xl mx-auto" />
-                <h3 className="text-xl font-semibold mt-4">
+                <h3 className="text-xl font-semibold mt-2!">
                   চমৎকার গ্রাহক সেবা
                 </h3>
                 <p className="text-gray-600 mt-2">
@@ -84,7 +84,7 @@ const AboutPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <FaUsers className="text-violet-500 text-4xl mx-auto" />
-                <h3 className="text-xl font-semibold mt-4">
+                <h3 className="text-xl font-semibold mt-2!">
                   বিশ্বস্ততার গ্যারান্টি
                 </h3>
                 <p className="text-gray-600 mt-2">
@@ -110,7 +110,7 @@ const AboutPage: React.FC = () => {
                   alt="Team Member 1"
                   className="w-32 h-32 rounded-full mx-auto shadow-md"
                 />
-                <h3 className="text-xl font-semibold mt-4">Full Name</h3>
+                <h3 className="text-xl font-semibold mt-4!">Full Name</h3>
                 <p className="text-gray-500">Co-Founder & CEO</p>
               </div>
               {/* Team Member 2 */}
@@ -120,7 +120,7 @@ const AboutPage: React.FC = () => {
                   alt="Team Member 2"
                   className="w-32 h-32 rounded-full mx-auto shadow-md"
                 />
-                <h3 className="text-xl font-semibold mt-4">Full Name</h3>
+                <h3 className="text-xl font-semibold mt-4!">Full Name</h3>
                 <p className="text-gray-500">Co-Founder & CTO</p>
               </div>
               {/* Team Member 3 */}
@@ -130,7 +130,7 @@ const AboutPage: React.FC = () => {
                   alt="Team Member 3"
                   className="w-32 h-32 rounded-full mx-auto shadow-md"
                 />
-                <h3 className="text-xl font-semibold mt-4">Full Name</h3>
+                <h3 className="text-xl font-semibold mt-4!">Full Name</h3>
                 <p className="text-gray-500">Chief Operating Officer</p>
               </div>
               {/* Team Member 4 */}
@@ -140,7 +140,7 @@ const AboutPage: React.FC = () => {
                   alt="Team Member 4"
                   className="w-32 h-32 rounded-full mx-auto shadow-md"
                 />
-                <h3 className="text-xl font-semibold mt-4">Full Name</h3>
+                <h3 className="text-xl font-semibold mt-4!">Full Name</h3>
                 <p className="text-gray-500">Marketing Lead</p>
               </div>
             </div>
