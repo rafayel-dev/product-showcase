@@ -525,7 +525,7 @@ const ProductDetailPage: React.FC = () => {
                 >
                   {reviews.map((review, index) => (
                     <div key={index} className="px-3">
-                      <Card className="bg-gray-50 h-full">
+                      <Card className="bg-gray-50">
                         <Space direction="vertical" size="middle">
                           <Space align="center">
                             <Text strong>{review.name}</Text>
