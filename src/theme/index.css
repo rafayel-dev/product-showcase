@@ -51,3 +51,37 @@ body::selection {
   color: #7f3bff !important;
   
 }
+
+/* Carousel slide wrapper */
+.review-slide {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Card width control */
+.review-card {
+  width: 100%;
+  max-width: 360px; /* mobile safe */
+}
+
+/* Slick carousel width fix */
+.ant-carousel .slick-slide > div {
+  width: 100%;
+}
+
+/* Text breaking protection */
+.review-card *,
+.review-name,
+.review-date {
+  word-break: normal !important;
+  white-space: normal !important;
+  overflow-wrap: break-word;
+}
+
+/* Prevent flex shrink issues */
+.review-name {
+  display: block;
+  flex: 1;
+}

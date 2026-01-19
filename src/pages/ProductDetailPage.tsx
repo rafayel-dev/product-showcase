@@ -518,17 +518,18 @@ const ProductDetailPage: React.FC = () => {
                   ]}
                 >
                   {reviews.map((review, index) => (
-                    <div key={index} className="px-3 w-full">
-                      <Card className="bg-gray-50 w-full">
+                    <div key={index} className="review-slide">
+                      <Card className="review-card bg-gray-50">
                         <Space
                           direction="vertical"
                           size="middle"
                           style={{ width: "100%" }}
                         >
-                          <Space align="center" wrap style={{ width: "100%" }}>
-                            <Text strong style={{ display: "block" }}>
+                          <Space align="start" wrap style={{ width: "100%" }}>
+                            <Text strong className="review-name">
                               {review.name}
                             </Text>
+
                             <Tag color="purple">Order ID: {review.orderId}</Tag>
                           </Space>
 
@@ -538,7 +539,10 @@ const ProductDetailPage: React.FC = () => {
                             {review.comment}
                           </Paragraph>
 
-                          <Text type="secondary" className="text-xs">
+                          <Text
+                            type="secondary"
+                            className="review-date text-xs"
+                          >
                             {review.date}
                           </Text>
                         </Space>
