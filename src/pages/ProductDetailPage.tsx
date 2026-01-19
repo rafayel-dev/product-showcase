@@ -238,11 +238,11 @@ const ProductDetailPage: React.FC = () => {
 
                     <a href="#review">
                       <Text
-                      type="secondary"
-                      className="text-xs md:text-sm cursor-pointer hover:underline"
-                    >
-                      (124 Reviews)
-                    </Text>
+                        type="secondary"
+                        className="text-xs md:text-sm cursor-pointer hover:underline"
+                      >
+                        (124 Reviews)
+                      </Text>
                     </a>
 
                     {/* SHARE BUTTON */}
@@ -513,22 +513,22 @@ const ProductDetailPage: React.FC = () => {
                   slidesToShow={3}
                   slidesToScroll={1}
                   responsive={[
-                    {
-                      breakpoint: 1024,
-                      settings: { slidesToShow: 2 },
-                    },
-                    {
-                      breakpoint: 640,
-                      settings: { slidesToShow: 1 },
-                    },
+                    { breakpoint: 1024, settings: { slidesToShow: 2 } },
+                    { breakpoint: 640, settings: { slidesToShow: 1 } },
                   ]}
                 >
                   {reviews.map((review, index) => (
-                    <div key={index} className="px-3">
-                      <Card className="bg-gray-50">
-                        <Space direction="vertical" size="middle">
-                          <Space align="center">
-                            <Text strong>{review.name}</Text>
+                    <div key={index} className="px-3 w-full">
+                      <Card className="bg-gray-50 w-full">
+                        <Space
+                          direction="vertical"
+                          size="middle"
+                          style={{ width: "100%" }}
+                        >
+                          <Space align="center" wrap style={{ width: "100%" }}>
+                            <Text strong style={{ display: "block" }}>
+                              {review.name}
+                            </Text>
                             <Tag color="purple">Order ID: {review.orderId}</Tag>
                           </Space>
 
