@@ -103,14 +103,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           color="#8E51FF"
           title={
             isAdded ? (
-              <Button
-                type="primary"
-                size="small"
-                className="bg-violet-500! text-white!"
+              <span
+                className="bg-violet-500! text-white! cursor-pointer"
                 onClick={openCart}
               >
                 View Cart
-              </Button>
+              </span>
             ) : (
               "Add to cart"
             )

@@ -52,36 +52,33 @@ body::selection {
   
 }
 
-/* Carousel slide wrapper */
-.review-slide {
-  width: 100%;
+/* === Review Carousel Layout Fix === */
+
+.review-carousel .slick-track {
   display: flex;
-  justify-content: center;
-  box-sizing: border-box;
 }
 
-/* Card width control */
-.review-card {
-  width: 100%;
-  max-width: 360px; /* mobile safe */
+.review-carousel .slick-slide {
+  min-width: 0;
 }
 
-/* Slick carousel width fix */
-.ant-carousel .slick-slide > div {
-  width: 100%;
+/* Mobile: 1 card */
+@media (max-width: 639px) {
+  .review-carousel .slick-slide {
+    width: 100% !important;
+  }
 }
 
-/* Text breaking protection */
-.review-card *,
-.review-name,
-.review-date {
-  word-break: normal !important;
-  white-space: normal !important;
-  overflow-wrap: break-word;
+/* Tablet: 2 cards */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .review-carousel .slick-slide {
+    width: 50% !important;
+  }
 }
 
-/* Prevent flex shrink issues */
-.review-name {
-  display: block;
-  flex: 1;
+/* Desktop: 3 cards */
+@media (min-width: 1024px) {
+  .review-carousel .slick-slide {
+    width: 33.3333% !important;
+  }
 }

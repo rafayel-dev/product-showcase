@@ -472,6 +472,22 @@ const ProductDetailPage: React.FC = () => {
 
               <Divider />
 
+              {/* DESCRIPTION */}
+              <Col xs={24} md={14}>
+                <Title level={4}>Description</Title>
+                <Paragraph className="text-gray-700 leading-relaxed">
+                  {product.description ||
+                    "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
+                </Paragraph>
+
+                <Paragraph className="text-gray-700">
+                  ✔ 100% Original Product
+                  <br />
+                  ✔ Quality Checked
+                  <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
+                </Paragraph>
+              </Col>
+              <Divider />
               {/* DELIVERY INFO */}
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={12}>
@@ -507,42 +523,41 @@ const ProductDetailPage: React.FC = () => {
                   এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
                 </Paragraph>
               ) : (
-                <Carousel
-                  adaptiveHeight
-                  arrows
-                  slidesToShow={3}
-                  slidesToScroll={1}
-                  responsive={[
-                    { breakpoint: 1024, settings: { slidesToShow: 2 } },
-                    { breakpoint: 640, settings: { slidesToShow: 1 } },
-                  ]}
-                >
+                <Carousel draggable swipeToSlide className="review-carousel">
                   {reviews.map((review, index) => (
-                    <div key={index} className="review-slide">
-                      <Card className="review-card bg-gray-50">
+                    <div key={index} className="px-2">
+                      <Card className="bg-gray-50 h-full overflow-hidden">
                         <Space
                           direction="vertical"
                           size="middle"
-                          style={{ width: "100%" }}
+                          className="w-full"
                         >
-                          <Space align="start" wrap style={{ width: "100%" }}>
-                            <Text strong className="review-name">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+                            <Text
+                              strong
+                              className="text-sm md:text-base wrap-break-word whitespace-normal"
+                            >
                               {review.name}
                             </Text>
 
-                            <Tag color="purple">Order ID: {review.orderId}</Tag>
-                          </Space>
+                            {review.orderId && (
+                              <Tag color="purple" className="w-fit">
+                                Order ID: {review.orderId}
+                              </Tag>
+                            )}
+                          </div>
 
-                          <Rate disabled value={review.rating} />
+                          <Rate
+                            disabled
+                            value={review.rating}
+                            className="text-xs md:text-base"
+                          />
 
-                          <Paragraph className="mb-1 line-clamp-3">
+                          <Paragraph className="mb-1 line-clamp-3 text-sm">
                             {review.comment}
                           </Paragraph>
 
-                          <Text
-                            type="secondary"
-                            className="review-date text-xs"
-                          >
+                          <Text type="secondary" className="text-xs">
                             {review.date}
                           </Text>
                         </Space>
