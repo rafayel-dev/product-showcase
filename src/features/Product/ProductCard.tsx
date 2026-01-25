@@ -1,8 +1,11 @@
-import { Card as AntCard, Button, Rate, Tooltip } from "antd";
+import { Rate, Tooltip } from "antd";
 import { FiCheck, FiPlus } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import AppButton from "../../components/common/AppButton";
+import AppCard from "../../components/common/AppCard";
 import { useCart } from "../../hooks/useCart";
 import type { CartItem, Product } from "../../types";
-import { Link, useNavigate } from "react-router-dom";
+import { interpolatePrice } from "../../utils/price";
 import toast from "../../utils/toast";
 
 /* ================= TYPES ================= */
@@ -19,9 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const discountPercentage = 15;
   const hasDiscount = discountPercentage > 0;
-  const finalPrice = hasDiscount
-    ? Math.round(price - (price * discountPercentage) / 100)
-    : price;
+  const finalPrice = interpolatePrice(price, discountPercentage);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,13 +51,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <AntCard
+    <AppCard
       hoverable
-      className="relative transition-all! duration-300! border! border-violet-500/50! overflow-hidden! rounded-lg! cursor-auto!"
+      bordered={false}
+      className="relative overflow-hidden! cursor-auto! border-violet-500/50!"
       cover={
         <Link to={`/product/${id}`}>
-          <div className="aspect-square overflow-hidden">
-            <img alt={title} src={image} className="object-cover" />
+          <div className="aspect-square overflow-hidden rounded-t-lg">
+            <img alt={title} src={image} className="object-cover w-full h-full transition-transform duration-300 hover:scale-102" />
             {hasDiscount && (
               <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
                 🔥{discountPercentage}% Off
@@ -85,18 +87,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
       <Link to={`/product/${id}`}>
-        <h5 className="text-xl font-bold text-gray-900 hover:text-violet-500 transition-all duration-300 font-nunito">
+        <h5 className="text-lg font-bold text-gray-900 hover:text-violet-500 transition-all duration-300 font-nunito truncate" title={title}>
           {title}
         </h5>
       </Link>
       <div className="flex justify-between items-center">
-        <Button
+        <AppButton
           type="primary"
-          className="bg-violet-500! hover:bg-violet-600! font-bold!"
+          className="font-bold!"
           onClick={handleBuyNow}
         >
           <span className="font-nunito">Buy Now</span>
-        </Button>
+        </AppButton>
         <Tooltip
           placement="top"
           trigger="hover"
@@ -104,7 +106,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           title={
             isAdded ? (
               <span
-                className="bg-violet-500! text-white! cursor-pointer"
+                className="cursor-pointer"
                 onClick={openCart}
               >
                 View Cart
@@ -115,25 +117,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           }
         >
           <span>
-            <Button
+            <AppButton
               shape="circle"
               disabled={isAdded}
-              className={`w-10! h-10!
-        flex! items-center! justify-center!
-        transition-all duration-300
-        ${
-          isAdded
-            ? "bg-violet-500! text-white! cursor-not-allowed! border-violet-500!"
-            : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
-        }`}
+              className={`w-10! h-10! flex! items-center! justify-center! ${isAdded
+                ? "cursor-not-allowed! bg-violet-600! text-white!"
+                : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
+                }`}
               onClick={handleAddToCart}
             >
               {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
-            </Button>
+            </AppButton>
           </span>
         </Tooltip>
       </div>
-    </AntCard>
+    </AppCard>
   );
 };
 

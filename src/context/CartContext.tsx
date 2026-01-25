@@ -14,6 +14,7 @@ interface CartContextType {
   clearCart: () => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -32,8 +33,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === itemToAdd.id &&
-          item.selectedSize === itemToAdd.selectedSize &&
-          item.selectedColor === itemToAdd.selectedColor
+            item.selectedSize === itemToAdd.selectedSize &&
+            item.selectedColor === itemToAdd.selectedColor
             ? { ...item, quantity: item.quantity + itemToAdd.quantity }
             : item
         );

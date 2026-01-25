@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductById } from "../services/productService";
+import { getProductById, getRelatedProducts } from "../services/productService";
 import type { CartItem, Product, Review } from "../types";
+import ProductList from "../features/Product/ProductList";
 import {
-  Card,
   Image,
   Typography,
-  Button,
   Rate,
   Row,
   Col,
@@ -16,9 +15,12 @@ import {
   Divider,
   Popover,
   Form,
-  Input,
   Carousel,
 } from "antd";
+import AppButton from "../components/common/AppButton";
+import AppCard from "../components/common/AppCard";
+import AppInput from "../components/common/AppInput";
+import SEO from "../components/common/SEO";
 import {
   MinusOutlined,
   PlusOutlined,
@@ -28,6 +30,7 @@ import {
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
+import { interpolatePrice } from "../utils/price";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -37,6 +40,7 @@ const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [form] = Form.useForm();
   const [selectedImage, setSelectedImage] = useState("");
@@ -47,7 +51,7 @@ const ProductDetailPage: React.FC = () => {
 
   const hasDiscount = discountPercentage > 0;
   const finalPrice = product
-    ? Math.round(product.price - (product.price * discountPercentage) / 100)
+    ? interpolatePrice(product.price, discountPercentage)
     : 0;
 
   useEffect(() => {
@@ -56,6 +60,7 @@ const ProductDetailPage: React.FC = () => {
       if (found) {
         setProduct(found);
         setSelectedImage(found.image);
+        setRelatedProducts(getRelatedProducts(found.id));
       } else {
         // Handle case where product is not found, e.g., navigate to a 404 page
         navigate("/404");
@@ -97,7 +102,14 @@ const ProductDetailPage: React.FC = () => {
     navigate("/checkout");
   };
 
-  const handleReviewSubmit = (values: any) => {
+  interface ReviewFormValues {
+    name: string;
+    orderId: string;
+    rating: number;
+    comment: string;
+  }
+
+  const handleReviewSubmit = (values: ReviewFormValues) => {
     const newReview: Review = {
       name: values.name,
       orderId: values.orderId,
@@ -158,39 +170,45 @@ const ProductDetailPage: React.FC = () => {
 
   const shareContent = (
     <Space direction="vertical">
-      <Button
+      <AppButton
         type="text"
         icon={<FaFacebook style={{ color: "#1877f2" }} />}
         onClick={shareFacebook}
       >
         Share on Facebook
-      </Button>
-      <Button
+      </AppButton>
+      <AppButton
         type="text"
         icon={<FaTwitter style={{ color: "#1da1f2" }} />}
         onClick={shareTwitter}
       >
         Share on Twitter
-      </Button>
-      <Button type="text" icon={<ShareAltOutlined />} onClick={copyLink}>
+      </AppButton>
+      <AppButton type="text" icon={<ShareAltOutlined />} onClick={copyLink}>
         Copy Link
-      </Button>
+      </AppButton>
     </Space>
   );
 
   return (
     <>
       {" "}
-      {/* SEO SCRIPT */}
-      <script type="application/ld+json">
-        {JSON.stringify(productSchema)}
-      </script>
+      <SEO
+        title={product.title}
+        description={product.description.substring(0, 150)}
+        image={selectedImage}
+        type="product"
+      >
+        <script type="application/ld+json">
+          {JSON.stringify(productSchema)}
+        </script>
+      </SEO>
       <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           <Row gutter={[32, 32]}>
             {/* IMAGES */}
             <Col xs={24} md={12}>
-              <Card bordered={false}>
+              <AppCard bordered={false}>
                 <div className="relative">
                   <div className="relative w-full aspect-square overflow-hidden rounded-lg">
                     <Image
@@ -219,12 +237,12 @@ const ProductDetailPage: React.FC = () => {
                     />
                   ))}
                 </Space>
-              </Card>
+              </AppCard>
             </Col>
 
             {/* DETAILS */}
             <Col xs={24} md={12}>
-              <Card bordered={false}>
+              <AppCard bordered={false}>
                 <Title level={2}>{product.title}</Title>
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   {/* LEFT SIDE */}
@@ -351,14 +369,14 @@ const ProductDetailPage: React.FC = () => {
                   <div>
                     <Text strong>Quantity:</Text>
                     <Space className="ml-3">
-                      <Button
-                        className="text-violet-500! hover:border-violet-500!"
+                      <AppButton
+                      className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<MinusOutlined />}
                         onClick={() => setQty(Math.max(1, qty - 1))}
                       />
                       <Text>{qty}</Text>
-                      <Button
-                        className="text-violet-500! hover:border-violet-500!"
+                      <AppButton
+                      className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<PlusOutlined />}
                         onClick={() => setQty(qty + 1)}
                       />
@@ -370,27 +388,27 @@ const ProductDetailPage: React.FC = () => {
 
                 {/* ACTION BUTTONS */}
                 <Space direction="vertical" className="w-full">
-                  <Button
+                  <AppButton
                     size="large"
-                    className="text-violet-500! hover:border-violet-500! text-lg!"
+                    className="text-lg! text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                     block
                     onClick={handleAddToCart}
                   >
                     Add to Cart
-                  </Button>
+                  </AppButton>
 
-                  <Button
+                  <AppButton
                     size="large"
                     type="primary"
                     block
-                    className="bg-violet-500! hover:bg-violet-600! text-lg!"
+                    className="text-lg! text-white! hover:text-white! hover:bg-violet-50! border-violet-500!"
                     onClick={handleBuyNow}
                   >
                     Buy Now
-                  </Button>
+                  </AppButton>
 
                   {/* WHATSAPP */}
-                  <Button
+                  <AppButton
                     size="large"
                     block
                     icon={<WhatsAppOutlined />}
@@ -398,15 +416,15 @@ const ProductDetailPage: React.FC = () => {
                     onClick={whatsappOrder}
                   >
                     Order via WhatsApp
-                  </Button>
+                  </AppButton>
                 </Space>
-              </Card>
+              </AppCard>
             </Col>
           </Row>
 
           {/* ================= FULL PRODUCT DETAILS ================= */}
           <div className="mt-12">
-            <Card bordered={false}>
+            <AppCard bordered={false}>
               <Title level={3}>📄 Product Details</Title>
               <Divider />
 
@@ -526,7 +544,7 @@ const ProductDetailPage: React.FC = () => {
                 <Carousel draggable swipeToSlide className="review-carousel">
                   {reviews.map((review, index) => (
                     <div key={index} className="px-2">
-                      <Card className="bg-gray-50 h-full overflow-hidden">
+                      <AppCard className="bg-gray-50 h-full overflow-hidden">
                         <Space
                           direction="vertical"
                           size="middle"
@@ -561,7 +579,7 @@ const ProductDetailPage: React.FC = () => {
                             {review.date}
                           </Text>
                         </Space>
-                      </Card>
+                      </AppCard>
                     </div>
                   ))}
                 </Carousel>
@@ -583,7 +601,7 @@ const ProductDetailPage: React.FC = () => {
                   name="name"
                   rules={[{ required: true, message: "নাম লিখুন" }]}
                 >
-                  <Input placeholder="আপনার নাম" />
+                  <AppInput placeholder="আপনার নাম" />
                 </Form.Item>
 
                 <Form.Item
@@ -591,7 +609,7 @@ const ProductDetailPage: React.FC = () => {
                   name="orderId"
                   rules={[{ required: true, message: "Order ID দিন" }]}
                 >
-                  <Input placeholder="যে Order ID দিয়ে কিনেছেন" />
+                  <AppInput placeholder="যে Order ID দিয়ে কিনেছেন" />
                 </Form.Item>
 
                 <Form.Item
@@ -607,21 +625,27 @@ const ProductDetailPage: React.FC = () => {
                   name="comment"
                   rules={[{ required: true, message: "রিভিউ লিখুন" }]}
                 >
-                  <Input.TextArea
+                  <AppInput.TextArea
                     rows={4}
                     placeholder="পণ্যের অভিজ্ঞতা লিখুন..."
                   />
                 </Form.Item>
 
-                <Button
+                <AppButton
                   type="primary"
                   htmlType="submit"
-                  className="bg-violet-500! hover:bg-violet-600!"
                 >
                   Submit Review
-                </Button>
+                </AppButton>
               </Form>
-            </Card>
+            </AppCard>
+          </div>
+
+          {/* ================= RELATED PRODUCTS ================= */}
+          <div className="mt-12">
+            <Title level={3}>Related Products</Title>
+            <Divider />
+            <ProductList products={relatedProducts} />
           </div>
         </div>
       </div>

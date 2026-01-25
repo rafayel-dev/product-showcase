@@ -1,23 +1,24 @@
 import React from "react";
 import {
   Typography,
-  Button,
   Divider,
-  Card,
   Row,
   Col,
   Empty,
   Form,
-  Input,
   Radio,
   Tag,
   Alert,
   Select,
   InputNumber,
 } from "antd";
+import AppButton from "../components/common/AppButton";
+import AppCard from "../components/common/AppCard";
+import AppInput from "../components/common/AppInput";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
+import { formatCurrency } from "../utils/price";
 import { useWatch } from "antd/es/form/Form";
 import { bangladeshDistricts } from "../data";
 import { FiX } from "react-icons/fi";
@@ -41,6 +42,7 @@ interface CheckoutFormValues {
   transactionId?: string;
 }
 
+
 const CheckoutPage: React.FC = () => {
   const { cartItems, clearCart, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
@@ -61,8 +63,6 @@ const CheckoutPage: React.FC = () => {
 
   const deliveryFee = deliveryArea ? DELIVERY_CHARGE[deliveryArea] : 0;
 
-  const formatCurrency = (amount: number) =>
-    `৳ ${amount.toLocaleString("en-BD")}`;
 
   const couponCode = useWatch("coupon", form);
 
@@ -75,7 +75,7 @@ const CheckoutPage: React.FC = () => {
 
   const totalAmount = subTotal + deliveryFee - discount;
 
-  const handlePlaceOrder = (values: any) => {
+  const handlePlaceOrder = (values: CheckoutFormValues) => {
     toast.success("অর্ডার সফলভাবে প্লেস করা হয়েছে 🎉");
     clearCart();
     navigate("/order-success", {
@@ -84,6 +84,12 @@ const CheckoutPage: React.FC = () => {
         total: totalAmount,
         paymentMethod: values.paymentMethod,
         address: values.address,
+        items: cartItems,
+        customerName: values.fullName,
+        customerPhone: values.phone,
+        customerEmail: values.email || "customer@email.com",
+        deliveryCharge: deliveryFee,
+        discount: discount,
       },
     });
   };
@@ -91,18 +97,35 @@ const CheckoutPage: React.FC = () => {
   /* ================= EMPTY CART ================= */
   if (!cartItems.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md text-center">
-          <Empty className="pb-2!" description="আপনার কার্ট খালি" />
-          <Button
-            className="bg-violet-500! hover:via-violet-600!"
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <AppCard className="w-full max-w-lg rounded-2xl shadow-sm text-center p-8">
+
+          {/* Icon / Illustration */}
+          <div className="flex justify-center mb-4">
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={false}
+            />
+          </div>
+
+          {/* Text */}
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            আপনার কার্ট এখন খালি
+          </h2>
+          <p className="text-gray-500 mb-6">
+            পছন্দের পণ্য যোগ করে সহজেই শপিং শুরু করুন
+          </p>
+
+          {/* CTA */}
+          <AppButton
             type="primary"
             size="large"
+            className="px-10 h-12 text-base rounded-lg"
             onClick={() => navigate("/")}
           >
-            আরো শপিং করুন
-          </Button>
-        </Card>
+            🛍️ শপিং শুরু করুন
+          </AppButton>
+        </AppCard>
       </div>
     );
   }
@@ -125,7 +148,7 @@ const CheckoutPage: React.FC = () => {
           <Row gutter={[24, 24]}>
             {/* ================= ORDER SUMMARY ================= */}
             <Col xs={24} md={12}>
-              <Card title="🧾 Order Summary" bordered={false}>
+              <AppCard title="🧾 Order Summary" bordered={false}>
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
@@ -148,7 +171,7 @@ const CheckoutPage: React.FC = () => {
                             updateQuantity(item.id, value || 1)
                           }
                         />
-                        <Button
+                        <AppButton
                           type="text"
                           className="ml-2!"
                           danger
@@ -167,7 +190,7 @@ const CheckoutPage: React.FC = () => {
                 <Divider />
 
                 <Form.Item name="coupon" className="w-1/3">
-                  <Input placeholder="Promo Code" />
+                  <AppInput placeholder="Promo Code" />
                 </Form.Item>
 
                 {couponCode &&
@@ -216,7 +239,7 @@ const CheckoutPage: React.FC = () => {
                     ✔ Cash on Delivery available all over Bangladesh
                   </span>
                 </Tag>
-              </Card>
+              </AppCard>
             </Col>
 
             {/* ================= SHIPPING & PAYMENT ================= */}
@@ -224,7 +247,7 @@ const CheckoutPage: React.FC = () => {
               <Text className="ml-2!" type="secondary">
                 সঠিক তথ্য দিন, আমরা দ্রুত ডেলিভারি দেব 🚚
               </Text>
-              <Card
+              <AppCard
                 title="📦 Shipping & Payment"
                 bordered={false}
                 className="md:sticky"
@@ -234,7 +257,7 @@ const CheckoutPage: React.FC = () => {
                   name="fullName"
                   rules={[{ required: true, message: "নাম লিখুন" }]}
                 >
-                  <Input placeholder="আপনার পুরো নাম" />
+                  <AppInput placeholder="আপনার পুরো নাম" />
                 </Form.Item>
 
                 <Form.Item
@@ -242,11 +265,11 @@ const CheckoutPage: React.FC = () => {
                   name="phone"
                   rules={[{ required: true, message: "মোবাইল নাম্বার দিন" }]}
                 >
-                  <Input placeholder="মোবাইল নাম্বার দিন" />
+                  <AppInput placeholder="মোবাইল নাম্বার দিন" />
                 </Form.Item>
 
                 <Form.Item label="Email Address (Optional)" name="email">
-                  <Input placeholder="ইমেইল ঠিকানা দিন" />
+                  <AppInput placeholder="ইমেইল ঠিকানা দিন" />
                 </Form.Item>
 
                 <Form.Item
@@ -296,7 +319,7 @@ const CheckoutPage: React.FC = () => {
                   name="address"
                   rules={[{ required: true, message: "ঠিকানা লিখুন" }]}
                 >
-                  <Input.TextArea rows={3} placeholder="বাসা/রোড/এলাকা, জেলা" />
+                  <AppInput.TextArea rows={3} placeholder="বাসা/রোড/এলাকা, জেলা" />
                 </Form.Item>
 
                 {/* ================= PAYMENT METHOD ================= */}
@@ -330,7 +353,7 @@ const CheckoutPage: React.FC = () => {
                       name="walletNumber"
                       rules={[{ required: true, message: "নাম্বার দিন" }]}
                     >
-                      <Input placeholder="01XXXXXXXXX" />
+                      <AppInput placeholder="01XXXXXXXXX" />
                     </Form.Item>
 
                     <Form.Item
@@ -338,21 +361,20 @@ const CheckoutPage: React.FC = () => {
                       name="transactionId"
                       rules={[{ required: true, message: "Txn ID দিন" }]}
                     >
-                      <Input placeholder="Transaction ID" />
+                      <AppInput placeholder="Transaction ID" />
                     </Form.Item>
                   </>
                 )}
 
-                <Button
+                <AppButton
                   type="primary"
-                  className="bg-violet-500! hover:bg-violet-600!"
                   size="large"
                   block
                   htmlType="submit"
                 >
                   Confirm Order ({formatCurrency(totalAmount)})
-                </Button>
-              </Card>
+                </AppButton>
+              </AppCard>
             </Col>
           </Row>
         </Form>

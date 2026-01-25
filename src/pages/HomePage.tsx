@@ -4,6 +4,7 @@ import LoadMoreButton from "../components/common/LoadMoreButton";
 import { slides } from "../data";
 import { useProducts } from "../hooks/useProducts";
 import Slider from "../features/Slider/Slider";
+import SEO from "../components/common/SEO";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -14,6 +15,10 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 pt-8">
+      <SEO
+        title="Home"
+        description="Discover our new arrivals and best selling products."
+      />
       {/* ================= SLIDER ================= */}
       <Slider slides={slides} />
 

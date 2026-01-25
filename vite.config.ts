@@ -6,7 +6,17 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 3040,
+    port: 4040,
     host: true,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'antd'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   }
 })
