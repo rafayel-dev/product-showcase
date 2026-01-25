@@ -198,11 +198,10 @@ const ProductDetailPage: React.FC = () => {
         description={product.description.substring(0, 150)}
         image={selectedImage}
         type="product"
-      >
-        <script type="application/ld+json">
-          {JSON.stringify(productSchema)}
-        </script>
-      </SEO>
+      />
+      <script type="application/ld+json">
+        {JSON.stringify(productSchema)}
+      </script>
       <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           <Row gutter={[32, 32]}>

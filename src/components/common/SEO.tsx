@@ -1,6 +1,4 @@
 import React from 'react';
-import type { ReactNode } from 'react';
-import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
     title: string;
@@ -9,7 +7,6 @@ interface SEOProps {
     type?: string;
     name?: string;
     image?: string;
-    children?: ReactNode;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -19,14 +16,13 @@ const SEO: React.FC<SEOProps> = ({
     type = 'website',
     name = 'Product Showcase',
     image,
-    children
 }) => {
     const siteUrl = window.location.origin;
     const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
     const fullImage = image ? (image.startsWith('http') ? image : `${siteUrl}${image}`) : undefined;
 
     return (
-        <Helmet>
+        <>
             {/* Standard metadata tags */}
             <title>{title} | {name}</title>
             <meta name='description' content={description} />
@@ -46,9 +42,7 @@ const SEO: React.FC<SEOProps> = ({
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
             {fullImage && <meta name="twitter:image" content={fullImage} />}
-
-            {children}
-        </Helmet>
+        </>
     );
 }
 
