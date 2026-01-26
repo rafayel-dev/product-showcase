@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 
 const AppSpin: React.FC = () => {
     return (
-        <div className="flex justify-center items-center h-[50vh] w-full">
+        <div className="flex justify-center items-center min-h-screen w-full">
             <Spin size="large" />
         </div>
     );

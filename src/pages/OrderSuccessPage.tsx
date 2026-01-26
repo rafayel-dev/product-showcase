@@ -44,8 +44,9 @@ const OrderSuccessPage: React.FC = () => {
 
 
   const handleDownloadInvoice = () => {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     window.open(
-      `${import.meta.env.VITE_API_URL}/orders/${orderId}/invoice`,
+      `${API_URL}/orders/${orderId}/invoice`,
       "_blank",
     );
   };

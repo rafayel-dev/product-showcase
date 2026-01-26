@@ -5,7 +5,7 @@ import AppButton from "../../components/common/AppButton";
 import AppCard from "../../components/common/AppCard";
 import { useCart } from "../../hooks/useCart";
 import type { CartItem, Product } from "../../types";
-import { interpolatePrice } from "../../utils/price";
+
 import toast from "../../utils/toast";
 
 /* ================= TYPES ================= */
@@ -20,16 +20,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const isAdded = cartItems.some((item) => item.id === id);
 
-  const discountPercentage = 15;
-  const hasDiscount = discountPercentage > 0;
-  const finalPrice = interpolatePrice(price, discountPercentage);
+  const hasDiscount = !!product.hasDiscount;
+  const finalPrice = hasDiscount
+    ? (product.discountType === 'flat'
+      ? price - (product.discountValue || 0)
+      : price - (price * (product.discountValue || 0)) / 100)
+    : price;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     const itemToAdd: CartItem = {
       ...product,
-      selectedSize: "M",
-      selectedColor: "Default",
+      selectedSize: product.specifications?.availableSizes?.[0] || "M",
+      selectedColor: product.specifications?.availableColors?.[0] || "Default",
       quantity: 1,
       price: finalPrice,
     };
@@ -41,8 +44,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     e.stopPropagation();
     const itemToAdd: CartItem = {
       ...product,
-      selectedSize: "M",
-      selectedColor: "Default",
+      selectedSize: product.specifications?.availableSizes?.[0] || "M",
+      selectedColor: product.specifications?.availableColors?.[0] || "Default",
       quantity: 1,
       price: finalPrice,
     };
@@ -61,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <img alt={title} src={image} className="object-cover w-full h-full transition-transform duration-300 hover:scale-102" />
             {hasDiscount && (
               <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
-                🔥{discountPercentage}% Off
+                🔥{product.discountType === 'flat' ? `৳${product.discountValue} Off` : `${product.discountValue}% Off`}
               </div>
             )}
           </div>

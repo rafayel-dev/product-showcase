@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Divider,
@@ -51,10 +51,11 @@ const CheckoutPage: React.FC = () => {
   const paymentMethod = useWatch("paymentMethod", form);
   const deliveryArea = useWatch("deliveryArea", form);
 
-  const COUPONS: Record<string, { type: "percent" | "flat"; value: number }> = {
-    SAVE15: { type: "percent", value: 15 },
-    WELCOME50: { type: "flat", value: 50 },
-  };
+  /* ================= COUPON STATE ================= */
+  const [couponCode, setCouponCode] = useState("");
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
 
   const subTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -62,36 +63,98 @@ const CheckoutPage: React.FC = () => {
   );
 
   const deliveryFee = deliveryArea ? DELIVERY_CHARGE[deliveryArea] : 0;
-
-
-  const couponCode = useWatch("coupon", form);
-
-  const discount =
-    couponCode && COUPONS[couponCode]
-      ? COUPONS[couponCode].type === "percent"
-        ? Math.round((subTotal * COUPONS[couponCode].value) / 100)
-        : COUPONS[couponCode].value
-      : 0;
-
+  const discount = appliedCoupon ? appliedCoupon.discountAmount : 0;
   const totalAmount = subTotal + deliveryFee - discount;
 
-  const handlePlaceOrder = (values: CheckoutFormValues) => {
-    toast.success("অর্ডার সফলভাবে প্লেস করা হয়েছে 🎉");
-    clearCart();
-    navigate("/order-success", {
-      state: {
-        orderId: "ORD" + Date.now(),
-        total: totalAmount,
+  /* ================= COUPON ACTION ================= */
+  const checkCoupon = async () => {
+    if (!couponCode) return;
+    setCheckingCoupon(true);
+    setCouponMessage(null);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const res = await fetch(`${API_URL}/coupons/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCode, orderAmount: subTotal })
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedCoupon({ code: data.code, discountAmount: data.discountAmount });
+        setCouponMessage({ type: 'success', text: `Coupon applied! You save ৳${data.discountAmount}` });
+      } else {
+        setAppliedCoupon(null);
+        setCouponMessage({ type: 'error', text: data.message || "Invalid coupon" });
+      }
+    } catch (err) {
+      setAppliedCoupon(null);
+      setCouponMessage({ type: 'error', text: "Error checking coupon" });
+    } finally {
+      setCheckingCoupon(false);
+    }
+  };
+
+  /* ================= ORDER PLACEMENT ================= */
+  const handlePlaceOrder = async (values: CheckoutFormValues) => {
+    try {
+      const orderPayload = {
+        orderItems: cartItems.map(item => ({
+          name: item.title,
+          qty: item.quantity,
+          image: item.image,
+          price: item.price,
+          product: item.id,
+          size: item.selectedSize,
+          color: item.selectedColor
+        })),
+        shippingAddress: {
+          address: values.address,
+          city: values.district, // using district as city
+          country: "Bangladesh"
+        },
         paymentMethod: values.paymentMethod,
-        address: values.address,
-        items: cartItems,
-        customerName: values.fullName,
-        customerPhone: values.phone,
-        customerEmail: values.email || "customer@email.com",
-        deliveryCharge: deliveryFee,
-        discount: discount,
-      },
-    });
+        itemsPrice: subTotal,
+        taxPrice: 0,
+        shippingPrice: deliveryFee,
+        totalPrice: totalAmount,
+        customerInfo: {
+          name: values.fullName,
+          phone: values.phone,
+          email: values.email
+        },
+        couponCode: appliedCoupon?.code
+      };
+
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const res = await fetch(`${API_URL}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload)
+      });
+
+      if (!res.ok) throw new Error('Failed to place order');
+
+      const data = await res.json();
+      toast.success("অর্ডার সফলভাবে প্লেস করা হয়েছে 🎉");
+      clearCart();
+      navigate("/order-success", {
+        state: {
+          orderId: data.orderId || data._id,
+          total: totalAmount,
+          paymentMethod: values.paymentMethod,
+          address: values.address,
+          items: cartItems,
+          customerName: values.fullName,
+          customerPhone: values.phone,
+          customerEmail: values.email || "customer@email.com",
+          deliveryCharge: deliveryFee,
+          discount: discount,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Order failed. Please try again.");
+    }
   };
 
   /* ================= EMPTY CART ================= */
@@ -99,30 +162,12 @@ const CheckoutPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <AppCard className="w-full max-w-lg rounded-2xl shadow-sm text-center p-8">
-
-          {/* Icon / Illustration */}
           <div className="flex justify-center mb-4">
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={false}
-            />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={false} />
           </div>
-
-          {/* Text */}
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            আপনার কার্ট এখন খালি
-          </h2>
-          <p className="text-gray-500 mb-6">
-            পছন্দের পণ্য যোগ করে সহজেই শপিং শুরু করুন
-          </p>
-
-          {/* CTA */}
-          <AppButton
-            type="primary"
-            size="large"
-            className="px-10 h-12 text-base rounded-lg"
-            onClick={() => navigate("/")}
-          >
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">আপনার কার্ট এখন খালি</h2>
+          <p className="text-gray-500 mb-6">পছন্দের পণ্য যোগ করে সহজেই শপিং শুরু করুন</p>
+          <AppButton type="primary" size="large" className="px-10 h-12 text-base rounded-lg" onClick={() => navigate("/")}>
             🛍️ শপিং শুরু করুন
           </AppButton>
         </AppCard>
@@ -189,18 +234,28 @@ const CheckoutPage: React.FC = () => {
 
                 <Divider />
 
-                <Form.Item name="coupon" className="w-1/3">
-                  <AppInput placeholder="Promo Code" />
-                </Form.Item>
+                {/* COUPON INPUT */}
+                <div className="flex gap-2 mb-2">
+                  <AppInput
+                    className="w-1/3!"
+                    placeholder="Promo Code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <AppButton
+                    type="primary"
+                    onClick={checkCoupon}
+                    loading={checkingCoupon}
+                  >
+                    Apply
+                  </AppButton>
+                </div>
 
-                {couponCode &&
-                  (COUPONS[couponCode] ? (
-                    <Text type="success" className="text-violet-500!">
-                      ✔ Coupon applied (-{formatCurrency(discount)})
-                    </Text>
-                  ) : (
-                    <Text type="danger">❌ Invalid coupon</Text>
-                  ))}
+                {couponMessage && (
+                  <Text type={couponMessage.type === 'success' ? 'success' : 'danger'} className="text-xs block mb-2">
+                    {couponMessage.text}
+                  </Text>
+                )}
 
                 {discount > 0 && (
                   <div className="flex justify-between">

@@ -6,7 +6,7 @@ import type { TextAreaProps } from 'antd/es/input';
 const AppInput: React.FC<InputProps> & { TextArea: React.FC<TextAreaProps> } = ({ className, ...props }) => {
     return (
         <Input
-            className={`rounded-lg active:ring-violet-500 focus:ring-violet-500 hover:border-violet-500 focus:border-violet-500 ${className || ''}`}
+            className={`rounded-lg active:ring-violet-500! focus:ring-violet-500! hover:border-violet-500! focus:border-violet-500! ${className || ''}`}
             {...props}
         />
     );
@@ -15,7 +15,7 @@ const AppInput: React.FC<InputProps> & { TextArea: React.FC<TextAreaProps> } = (
 const AppTextArea: React.FC<TextAreaProps> = ({ className, ...props }) => {
     return (
         <Input.TextArea
-            className={`rounded-lg hover:border-violet-500 focus:border-violet-500 ${className || ''}`}
+            className={`rounded-lg hover:border-violet-500! focus:border-violet-500! ${className || ''}`}
             {...props}
         />
     );

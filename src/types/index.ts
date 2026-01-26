@@ -4,12 +4,24 @@ export interface Slide {
 }
 
 export interface Product {
-  id: number;
+  id: string; // Changed to string for MongoDB compatibility
   title: string;
   image: string;
   rating: number;
   price: number;
   description: string;
+  imageUrls?: string[];
+  stock?: number;
+  hasDiscount?: boolean;
+  discountType?: 'flat' | 'percentage';
+  discountValue?: number;
+  specifications?: {
+    brand?: string;
+    material?: string;
+    availableSizes?: string[];
+    availableColors?: string[];
+    countryOfOrigin?: string;
+  };
 }
 
 export interface CartItem extends Product {

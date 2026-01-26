@@ -30,7 +30,7 @@ import {
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
-import { interpolatePrice } from "../utils/price";
+
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -47,25 +47,43 @@ const ProductDetailPage: React.FC = () => {
   const [size, setSize] = useState("M");
   const [color, setColor] = useState("Black");
   const [qty, setQty] = useState(1);
-  const discountPercentage = 15;
+  /* ================= DISCOUNT LOGIC ================= */
+  const hasDiscount = !!product?.hasDiscount;
 
-  const hasDiscount = discountPercentage > 0;
   const finalPrice = product
-    ? interpolatePrice(product.price, discountPercentage)
+    ? (product.hasDiscount
+      ? (product.discountType === 'flat'
+        ? product.price - (product.discountValue || 0)
+        : product.price - (product.price * (product.discountValue || 0)) / 100)
+      : product.price)
     : 0;
 
+
+
   useEffect(() => {
-    if (id) {
-      const found = getProductById(Number(id));
-      if (found) {
-        setProduct(found);
-        setSelectedImage(found.image);
-        setRelatedProducts(getRelatedProducts(found.id));
-      } else {
-        // Handle case where product is not found, e.g., navigate to a 404 page
-        navigate("/404");
+    const fetchData = async () => {
+      if (id) {
+        const found = await getProductById(id);
+        if (found) {
+          setProduct(found);
+          setSelectedImage(found.image);
+
+          if (found.specifications?.availableSizes?.length) {
+            setSize(found.specifications.availableSizes[0]);
+          }
+          if (found.specifications?.availableColors?.length) {
+            setColor(found.specifications.availableColors[0]);
+          }
+
+          const related = await getRelatedProducts(found.id);
+          setRelatedProducts(related);
+        } else {
+          // Handle case where product is not found, e.g., navigate to a 404 page
+          navigate("/404");
+        }
       }
-    }
+    };
+    fetchData();
   }, [id, navigate]);
 
   if (!product) return null;
@@ -219,20 +237,20 @@ const ProductDetailPage: React.FC = () => {
                   {/* FLASH SALE BADGE */}
                   {hasDiscount && (
                     <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
-                      🔥{discountPercentage}% Off
+                      🔥{product.discountType === 'flat' ? `৳${product.discountValue} Off` : `${product.discountValue}% Off`}
                     </div>
                   )}
                 </div>
 
-                <Space className="mt-4">
-                  {[product.image, product.image].map((img, i) => (
+                <Space className="mt-4" wrap>
+                  {(product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls : [product.image]).map((img, i) => (
                     <Image
                       key={i}
                       src={img}
                       width={70}
                       preview={false}
                       onClick={() => setSelectedImage(img)}
-                      className="cursor-pointer rounded aspect-square object-cover selection:border-violet-500!"
+                      className={`cursor-pointer rounded aspect-square object-cover ${selectedImage === img ? 'border-2 border-violet-500' : ''}`}
                     />
                   ))}
                 </Space>
@@ -313,69 +331,64 @@ const ProductDetailPage: React.FC = () => {
                 <Divider />
 
                 {/* VARIANTS */}
+                {/* VARIANTS */}
                 <Space direction="vertical" size="middle">
-                  <div>
-                    <Text strong>Size: </Text>
-                    <Radio.Group
-                      className="ml-3"
-                      value={size}
-                      onChange={(e) => setSize(e.target.value)}
-                    >
-                      <Radio.Button
-                        value="S"
-                        className="text-violet-500! hover:border-violet-500!"
+                  {/* SIZES */}
+                  {product.specifications?.availableSizes && product.specifications.availableSizes.length > 0 && (
+                    <div>
+                      <Text strong>Size: </Text>
+                      <Radio.Group
+                        className="ml-3"
+                        value={size}
+                        onChange={(e) => setSize(e.target.value)}
                       >
-                        S
-                      </Radio.Button>
-                      <Radio.Button
-                        value="M"
-                        className="text-violet-500! hover:border-violet-500!"
-                      >
-                        M
-                      </Radio.Button>
-                      <Radio.Button
-                        value="L"
-                        className="text-violet-500! hover:border-violet-500!"
-                      >
-                        L
-                      </Radio.Button>
-                    </Radio.Group>
-                  </div>
+                        {product.specifications.availableSizes.map((s) => (
+                          <Radio.Button
+                            key={s}
+                            value={s}
+                            className={`text-violet-500! hover:border-violet-500! ${size === s ? "border-violet-500!" : ""}`}
+                          >
+                            {s}
+                          </Radio.Button>
+                        ))}
+                      </Radio.Group>
+                    </div>
+                  )}
 
-                  <div>
-                    <Text strong>Color: </Text>
-                    <Radio.Group
-                      className="ml-3"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                    >
-                      <Radio.Button
-                        value="Black"
-                        className="text-violet-500! hover:border-violet-500! "
+                  {/* COLORS */}
+                  {product.specifications?.availableColors && product.specifications.availableColors.length > 0 && (
+                    <div>
+                      <Text strong>Color: </Text>
+                      <Radio.Group
+                        className="ml-3"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
                       >
-                        Black
-                      </Radio.Button>
-                      <Radio.Button
-                        value="Blue"
-                        className="text-violet-500! hover:border-violet-500!"
-                      >
-                        Blue
-                      </Radio.Button>
-                    </Radio.Group>
-                  </div>
+                        {product.specifications.availableColors.map((c) => (
+                          <Radio.Button
+                            key={c}
+                            value={c}
+                            className={`text-violet-500! hover:border-violet-500! ${color === c ? "border-violet-500!" : ""}`}
+                          >
+                            {c}
+                          </Radio.Button>
+                        ))}
+                      </Radio.Group>
+                    </div>
+                  )}
 
                   {/* QUANTITY */}
                   <div>
                     <Text strong>Quantity:</Text>
                     <Space className="ml-3">
                       <AppButton
-                      className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
+                        className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<MinusOutlined />}
                         onClick={() => setQty(Math.max(1, qty - 1))}
                       />
                       <Text>{qty}</Text>
                       <AppButton
-                      className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
+                        className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<PlusOutlined />}
                         onClick={() => setQty(qty + 1)}
                       />
@@ -430,7 +443,7 @@ const ProductDetailPage: React.FC = () => {
               <Row gutter={[24, 24]}>
                 {/* DESCRIPTION */}
                 <Col xs={24} md={14}>
-                  <Title level={4}>Description</Title>
+                  <Title level={4}>Short Description</Title>
                   <Paragraph className="text-gray-700 leading-relaxed">
                     {product.description ||
                       "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
@@ -442,6 +455,7 @@ const ProductDetailPage: React.FC = () => {
                     ✔ Quality Checked
                     <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
                   </Paragraph>
+
                 </Col>
 
                 {/* SPECIFICATIONS */}
@@ -453,35 +467,35 @@ const ProductDetailPage: React.FC = () => {
                       <Text strong className="text-gray-700!" type="secondary">
                         Brand
                       </Text>
-                      <Text>Escape</Text>
+                      <Text>{product.specifications?.brand || "—"}</Text>
                     </div>
 
                     <div className="flex justify-between border-b border-gray-200 pb-2">
                       <Text strong className="text-gray-700!" type="secondary">
                         Available Sizes
                       </Text>
-                      <Text>S, M, L</Text>
+                      <Text>{product.specifications?.availableSizes?.join(", ") || "—"}</Text>
                     </div>
 
                     <div className="flex justify-between border-b border-gray-200 pb-2">
                       <Text strong className="text-gray-700!" type="secondary">
                         Available Colors
                       </Text>
-                      <Text>Black, Blue</Text>
+                      <Text>{product.specifications?.availableColors?.join(", ") || "—"}</Text>
                     </div>
 
                     <div className="flex justify-between border-b border-gray-200 pb-2">
                       <Text strong className="text-gray-700!" type="secondary">
                         Material
                       </Text>
-                      <Text>Premium Fabric</Text>
+                      <Text>{product.specifications?.material || "—"}</Text>
                     </div>
 
                     <div className="flex justify-between border-b border-gray-200 pb-2">
                       <Text strong className="text-gray-700!" type="secondary">
                         Country of Origin
                       </Text>
-                      <Text>Bangladesh</Text>
+                      <Text>{product.specifications?.countryOfOrigin || "—"}</Text>
                     </div>
                   </div>
                 </Col>
@@ -497,12 +511,7 @@ const ProductDetailPage: React.FC = () => {
                     "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
                 </Paragraph>
 
-                <Paragraph className="text-gray-700">
-                  ✔ 100% Original Product
-                  <br />
-                  ✔ Quality Checked
-                  <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
-                </Paragraph>
+
               </Col>
               <Divider />
               {/* DELIVERY INFO */}

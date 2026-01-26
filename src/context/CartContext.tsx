@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { CartItem } from '../types';
 
@@ -6,11 +6,11 @@ interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
   addToCart: (product: CartItem) => void;
-  removeFromCart: (productId: number) => void;
+  removeFromCart: (productId: string) => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -18,8 +18,25 @@ interface CartContextType {
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    try {
+      const stored = localStorage.getItem('product_showcase_cart');
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      console.error("Failed to load cart", e);
+      return [];
+    }
+  });
+
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('product_showcase_cart', JSON.stringify(cartItems));
+    } catch (e) {
+      console.error("Failed to save cart", e);
+    }
+  }, [cartItems]);
 
   const addToCart = (itemToAdd: CartItem) => {
     setCartItems((prevItems) => {
@@ -44,7 +61,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
   };
 
@@ -64,7 +81,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setCartItems([]);
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number) => {
     setCartItems((prevItems) =>
       prevItems
         .map((item) => (item.id === productId ? { ...item, quantity: quantity } : item))

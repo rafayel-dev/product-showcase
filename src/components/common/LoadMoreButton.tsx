@@ -17,7 +17,7 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({ loading, hasMore, loadM
 
   return (
     <div style={{ textAlign: 'center', marginTop: '28px' }}>
-      <Button size="large" onClick={loadMore} loading={loading} className='border-violet-600! text-violet-600! hover:opacity-80!'>
+      <Button size="large" onClick={loadMore} loading={loading} className='border-violet-600! text-violet-600! hover:opacity-80! font-nunito'>
         Load More
       </Button>
     </div>

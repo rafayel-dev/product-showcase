@@ -27,6 +27,7 @@ const HomePage: React.FC = () => {
         {/* Title */}
         <Col xs={24} md={8}>
           <Title
+          className="font-nunito"
             level={1}
             style={{
               margin: 0,
