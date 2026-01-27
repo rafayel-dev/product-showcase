@@ -196,7 +196,7 @@ const CheckoutPage: React.FC = () => {
               <AppCard title="🧾 Order Summary" bordered={false}>
                 {cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
                     className="flex justify-between items-start gap-2"
                   >
                     <div className="flex-1 min-w-0">
@@ -206,6 +206,9 @@ const CheckoutPage: React.FC = () => {
                       >
                         {item.title}
                       </Text>
+                      <Text type="secondary" className="block text-xs mb-1">
+                        Size: {item.selectedSize || 'N/A'} | Color: {item.selectedColor || 'N/A'}
+                      </Text>
                       <Text type="secondary" className="text-sm!">
                         {formatCurrency(item.price)} x
                         <InputNumber
@@ -213,7 +216,7 @@ const CheckoutPage: React.FC = () => {
                           min={1}
                           value={item.quantity}
                           onChange={(value: number | null) =>
-                            updateQuantity(item.id, value || 1)
+                            updateQuantity(item.id, value || 1, item.selectedSize, item.selectedColor)
                           }
                         />
                         <AppButton
@@ -221,7 +224,7 @@ const CheckoutPage: React.FC = () => {
                           className="ml-2!"
                           danger
                           icon={<FiX />}
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor)}
                         />
                       </Text>
                     </div>

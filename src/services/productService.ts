@@ -8,13 +8,17 @@ const mapProduct = (item: any): Product => ({
   image: item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5000${item.imageUrl}`) : 'https://placehold.co/600x400',
   imageUrls: item.imageUrls?.map((url: string) => url.startsWith('http') ? url : `http://localhost:5000${url}`) || [],
   price: item.price,
-  description: item.description || (item.productDetails?.description) || "",
+  shortDescription: item.specifications?.shortDescription || item.description || "",
+  longDescription: item.productDetails?.longDescription || "",
   rating: item.rating || 4.5,
   stock: item.stock,
   hasDiscount: item.hasDiscount,
   discountType: item.discountType,
   discountValue: item.discountValue,
   specifications: item.specifications,
+  tags: item.tags,
+  status: item.status,
+  productDetails: item.productDetails,
 });
 
 export const getProducts = async (): Promise<Product[]> => {

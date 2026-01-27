@@ -9,7 +9,8 @@ export interface Product {
   image: string;
   rating: number;
   price: number;
-  description: string;
+  shortDescription: string;
+  longDescription: string;
   imageUrls?: string[];
   stock?: number;
   hasDiscount?: boolean;
@@ -21,6 +22,13 @@ export interface Product {
     availableSizes?: string[];
     availableColors?: string[];
     countryOfOrigin?: string;
+  };
+  tags?: string[];
+  status?: string;
+  productDetails?: {
+    features?: string[];
+    deliveryInfo?: string;
+    returnPolicy?: string;
   };
 }
 

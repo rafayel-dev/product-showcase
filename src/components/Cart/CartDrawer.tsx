@@ -31,17 +31,19 @@ const CartDrawer: React.FC = () => {
       ) : (
         <>
           {cartItems.map((item) => (
-            <div key={item.id} className="flex items-center justify-between mb-2">
+            <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex items-center justify-between mb-2">
               <div className="flex items-center">
                 <img src={item.image} alt={item.title} className="w-16 h-16 object-cover mr-4" />
                 <div>
                   <Text strong>{item.title}</Text>
-                  <br />
+                  <Text type="secondary" className="block text-xs">
+                    {item.selectedSize} | {item.selectedColor}
+                  </Text>
                   <Text type="secondary">${item.price} x </Text>
                   <InputNumber
                     min={1}
                     value={item.quantity}
-                    onChange={(value: number | null) => updateQuantity(item.id, value || 1)}
+                    onChange={(value: number | null) => updateQuantity(item.id, value || 1, item.selectedSize, item.selectedColor)}
                     style={{ width: 50 }}
                   />
                 </div>
@@ -51,7 +53,7 @@ const CartDrawer: React.FC = () => {
                 className='bg-red-50!'
                 danger
                 icon={<FiX />}
-                onClick={() => removeFromCart(item.id)}
+                onClick={() => removeFromCart(item.id, item.selectedSize, item.selectedColor)}
               />
             </div>
           ))}

@@ -94,7 +94,7 @@ const ProductDetailPage: React.FC = () => {
     "@type": "Product",
     name: product.title,
     image: [selectedImage],
-    description: product.description,
+    description: product.shortDescription,
     brand: { "@type": "Brand", name: "Your Store Name" },
     offers: {
       "@type": "Offer",
@@ -213,7 +213,7 @@ const ProductDetailPage: React.FC = () => {
       {" "}
       <SEO
         title={product.title}
-        description={product.description.substring(0, 150)}
+        description={product.shortDescription.substring(0, 150)}
         image={selectedImage}
         type="product"
       />
@@ -321,16 +321,28 @@ const ProductDetailPage: React.FC = () => {
                 <Space wrap className="my-3">
                   <Tag color="blue">Fast Delivery</Tag>
                   <Tag color="gold">Original Product</Tag>
-                  <Tag color="green" className="font-bold">
-                    In Stock
-                  </Tag>
+                  {product.status === 'Out of Stock' ? (
+                    <Tag color="red" className="font-bold">Out of Stock</Tag>
+                  ) : product.status === 'Discontinued' ? (
+                    <Tag color="default" className="font-bold">Discontinued</Tag>
+                  ) : (
+                    <Tag color="green" className="font-bold">In Stock</Tag>
+                  )}
                 </Space>
 
-                <Paragraph>{product.description}</Paragraph>
+                <Paragraph>{product.shortDescription}</Paragraph>
+
+                {/* TAGS */}
+                {product.tags && product.tags.length > 0 && (
+                  <div className="mb-4">
+                    {product.tags.map(tag => (
+                      <Tag key={tag} className="mr-1!">#{tag}</Tag>
+                    ))}
+                  </div>
+                )}
 
                 <Divider />
 
-                {/* VARIANTS */}
                 {/* VARIANTS */}
                 <Space direction="vertical" size="middle">
                   {/* SIZES */}
@@ -378,7 +390,7 @@ const ProductDetailPage: React.FC = () => {
                   )}
 
                   {/* QUANTITY */}
-                  <div>
+                  <div className="mb-6">
                     <Text strong>Quantity:</Text>
                     <Space className="ml-3">
                       <AppButton
@@ -396,14 +408,13 @@ const ProductDetailPage: React.FC = () => {
                   </div>
                 </Space>
 
-                <Divider />
-
                 {/* ACTION BUTTONS */}
                 <Space direction="vertical" className="w-full">
                   <AppButton
                     size="large"
                     className="text-lg! text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                     block
+                    disabled={product.status === 'Out of Stock' || product.status === 'Discontinued'}
                     onClick={handleAddToCart}
                   >
                     Add to Cart
@@ -414,6 +425,7 @@ const ProductDetailPage: React.FC = () => {
                     type="primary"
                     block
                     className="text-lg! text-white! hover:text-white! hover:bg-violet-50! border-violet-500!"
+                    disabled={product.status === 'Out of Stock' || product.status === 'Discontinued'}
                     onClick={handleBuyNow}
                   >
                     Buy Now
@@ -445,16 +457,27 @@ const ProductDetailPage: React.FC = () => {
                 <Col xs={24} md={14}>
                   <Title level={4}>Short Description</Title>
                   <Paragraph className="text-gray-700 leading-relaxed">
-                    {product.description ||
+                    {product.shortDescription ||
                       "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
                   </Paragraph>
 
-                  <Paragraph className="text-gray-700">
-                    ✔ 100% Original Product
-                    <br />
-                    ✔ Quality Checked
-                    <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
-                  </Paragraph>
+                  {product.productDetails?.features && product.productDetails.features.length > 0 ? (
+                    <div className="mt-4">
+                      <Title level={5}>Key Features:</Title>
+                      <ul className="list-disc list-inside text-gray-700">
+                        {product.productDetails.features.map((feature, idx) => (
+                          <li key={idx}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <Paragraph className="text-gray-700">
+                      ✔ 100% Original Product
+                      <br />
+                      ✔ Quality Checked
+                      <br />✔ বাংলাদেশে দ্রুত ডেলিভারি
+                    </Paragraph>
+                  )}
 
                 </Col>
 
@@ -504,35 +527,34 @@ const ProductDetailPage: React.FC = () => {
               <Divider />
 
               {/* DESCRIPTION */}
-              <Col xs={24} md={14}>
+              <Col xs={24} md={24}>
                 <Title level={4}>Description</Title>
-                <Paragraph className="text-gray-700 leading-relaxed">
-                  {product.description ||
-                    "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"}
-                </Paragraph>
-
-
+                <div
+                  className="text-gray-700 leading-relaxed rich-text-content"
+                  dangerouslySetInnerHTML={{
+                    __html: product.longDescription || "এই পণ্যটি দৈনন্দিন ব্যবহারের জন্য উপযুক্ত। উন্নত মানের ম্যাটেরিয়াল দিয়ে তৈরি, যা দীর্ঘদিন টেকসই থাকবে।"
+                  }}
+                />
               </Col>
+
               <Divider />
               {/* DELIVERY INFO */}
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={12}>
                   <Title level={4}>🚚 Delivery Information</Title>
-                  <Paragraph>
-                    • ঢাকা শহরের ভিতরে: 1–2 কর্মদিবস
-                    <br />
-                    • ঢাকার বাইরে: 2–4 কর্মদিবস
-                    <br />• Cash on Delivery available
+                  <Paragraph className="whitespace-pre-line">
+                    {product.productDetails?.deliveryInfo || `• ঢাকা শহরের ভিতরে: 1–2 কর্মদিবস
+• ঢাকার বাইরে: 2–4 কর্মদিবস
+• Cash on Delivery available`}
                   </Paragraph>
                 </Col>
 
                 <Col xs={24} md={12}>
                   <Title level={4}>↩ Return Policy</Title>
-                  <Paragraph>
-                    • ৭ দিনের মধ্যে রিটার্ন সুবিধা
-                    <br />
-                    • পণ্য ব্যবহার না করা থাকতে হবে
-                    <br />• রিটার্ন চার্জ প্রযোজ্য হতে পারে
+                  <Paragraph className="whitespace-pre-line">
+                    {product.productDetails?.returnPolicy || `• ৭ দিনের মধ্যে রিটার্ন সুবিধা
+• পণ্য ব্যবহার না করা থাকতে হবে
+• রিটার্ন চার্জ প্রযোজ্য হতে পারে`}
                   </Paragraph>
                 </Col>
               </Row>

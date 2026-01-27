@@ -6,11 +6,11 @@ interface CartContextType {
   cartItems: CartItem[];
   isCartOpen: boolean;
   addToCart: (product: CartItem) => void;
-  removeFromCart: (productId: string) => void;
+  removeFromCart: (productId: string, size?: string, color?: string) => void;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateQuantity: (productId: string, quantity: number, size?: string, color?: string) => void;
   clearCart: () => void;
 }
 
@@ -61,9 +61,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
+  const removeFromCart = (productId: string, size?: string, color?: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) =>
+      !(item.id === productId &&
+        (size ? item.selectedSize === size : true) &&
+        (color ? item.selectedColor === color : true))
+    ));
   };
+
 
   const toggleCart = () => {
     setIsCartOpen((prev) => !prev);
@@ -81,10 +86,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setCartItems([]);
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, size?: string, color?: string) => {
     setCartItems((prevItems) =>
       prevItems
-        .map((item) => (item.id === productId ? { ...item, quantity: quantity } : item))
+        .map((item) => {
+          if (item.id === productId &&
+            (size ? item.selectedSize === size : true) &&
+            (color ? item.selectedColor === color : true)) {
+            return { ...item, quantity: quantity };
+          }
+          return item;
+        })
         .filter((item) => item.quantity > 0)
     );
   };
