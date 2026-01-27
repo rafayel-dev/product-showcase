@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductById, getRelatedProducts } from "../services/productService";
+import { getProductById, getRelatedProducts, createReview, getProductReviews } from "../services/productService";
 import type { CartItem, Product, Review } from "../types";
 import ProductList from "../features/Product/ProductList";
 import {
@@ -47,6 +47,11 @@ const ProductDetailPage: React.FC = () => {
   const [size, setSize] = useState("M");
   const [color, setColor] = useState("Black");
   const [qty, setQty] = useState(1);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [page, setPage] = useState(1);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [hasMoreReviews, setHasMoreReviews] = useState(true);
+
   /* ================= DISCOUNT LOGIC ================= */
   const hasDiscount = !!product?.hasDiscount;
 
@@ -85,6 +90,45 @@ const ProductDetailPage: React.FC = () => {
     };
     fetchData();
   }, [id, navigate]);
+
+  useEffect(() => {
+    if (product?.reviews) {
+      setReviews(product.reviews as Review[]);
+      setPage(1);
+      if (product.numReviews && product.reviews.length >= product.numReviews) {
+        setHasMoreReviews(false);
+      } else {
+        setHasMoreReviews(true);
+      }
+    }
+  }, [product]);
+
+  const onCarouselChange = async (current: number) => {
+    if (!loadingReviews && hasMoreReviews && product?.id && (current + 4 >= reviews.length)) {
+      setLoadingReviews(true);
+      try {
+        const nextPage = page + 1;
+        const more = await getProductReviews(product.id, nextPage, 6);
+
+        if (more.length > 0) {
+          // Filter duplicates just in case
+          setReviews(prev => {
+            const existingIds = new Set(prev.map(r => r._id || r.name + r.date));
+            const uniqueMore = more.filter(r => !existingIds.has(r._id || r.name + r.date));
+            return [...prev, ...uniqueMore];
+          });
+          setPage(nextPage);
+          if (more.length < 6) setHasMoreReviews(false);
+        } else {
+          setHasMoreReviews(false);
+        }
+      } catch (err) {
+        console.error("Failed to load more reviews", err);
+      } finally {
+        setLoadingReviews(false);
+      }
+    }
+  };
 
   if (!product) return null;
 
@@ -127,18 +171,43 @@ const ProductDetailPage: React.FC = () => {
     comment: string;
   }
 
-  const handleReviewSubmit = (values: ReviewFormValues) => {
-    const newReview: Review = {
-      name: values.name,
-      orderId: values.orderId,
-      rating: values.rating,
-      comment: values.comment,
-      date: new Date().toLocaleDateString(),
-    };
 
-    setReviews((prev) => [newReview, ...prev]);
-    toast.success("আপনার রিভিউটি সাবমিট হয়েছে ❤️");
-    form.resetFields();
+
+  const handleReviewSubmit = async (values: ReviewFormValues) => {
+    try {
+      if (!product?.id) return;
+
+      await createReview(product.id, {
+        name: values.name,
+        orderId: values.orderId,
+        rating: values.rating,
+        comment: values.comment,
+      });
+
+      const newReview: Review = {
+        name: values.name,
+        orderId: values.orderId,
+        rating: values.rating,
+        comment: values.comment,
+        date: new Date().toLocaleDateString(),
+      };
+
+      const newReviewsList = [newReview, ...reviews];
+      const newNumReviews = newReviewsList.length;
+      const newRating = newReviewsList.reduce((acc, item) => acc + item.rating, 0) / newNumReviews;
+
+      setProduct({
+        ...product!,
+        reviews: newReviewsList,
+        numReviews: newNumReviews,
+        rating: newRating
+      });
+
+      toast.success("আপনার রিভিউটি সাবমিট হয়েছে ❤️");
+      form.resetFields();
+    } catch (error: any) {
+      toast.error(error.message || "রিভিউ দিতে সমস্যা হয়েছে");
+    }
   };
 
   const whatsappOrder = () => {
@@ -267,7 +336,7 @@ const ProductDetailPage: React.FC = () => {
                     <Rate
                       disabled
                       allowHalf
-                      defaultValue={product.rating}
+                      value={product.rating}
                       className="text-xs! sm:text-sm! md:text-base!"
                     />
 
@@ -276,7 +345,7 @@ const ProductDetailPage: React.FC = () => {
                         type="secondary"
                         className="text-xs md:text-sm cursor-pointer hover:underline"
                       >
-                        (124 Reviews)
+                        ({product.numReviews || 0} Reviews)
                       </Text>
                     </a>
 
@@ -565,109 +634,152 @@ const ProductDetailPage: React.FC = () => {
               <Title id="review" level={4}>
                 ⭐ Customer Reviews
               </Title>
-              {/* Review List */}
               {reviews.length === 0 ? (
                 <Paragraph type="secondary">
                   এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
                 </Paragraph>
               ) : (
-                <Carousel draggable swipeToSlide className="review-carousel">
-                  {reviews.map((review, index) => (
-                    <div key={index} className="px-2">
-                      <AppCard className="bg-gray-50 h-full overflow-hidden">
-                        <Space
-                          direction="vertical"
-                          size="middle"
-                          className="w-full"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
-                            <Text
-                              strong
-                              className="text-sm md:text-base wrap-break-word whitespace-normal"
-                            >
-                              {review.name}
+                <div className="-mx-2">
+                  <Carousel
+                    draggable
+                    swipeToSlide
+                    arrows
+                    dots={false}
+                    slidesToShow={3}
+                    slidesToScroll={1}
+                    afterChange={onCarouselChange}
+                    responsive={[
+                      {
+                        breakpoint: 1024,
+                        settings: { slidesToShow: 2 },
+                      },
+                      {
+                        breakpoint: 640,
+                        settings: { slidesToShow: 1 },
+                      },
+                    ]}
+                    className="review-carousel pb-8"
+                  >
+                    {reviews.map((review, index) => (
+                      <div key={index} className="px-2 h-full">
+                        <AppCard className="bg-gray-50 h-full overflow-hidden" bordered={false}>
+                          <Space
+                            direction="vertical"
+                            size="small"
+                            className="w-full"
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-1 w-full">
+                              <Text
+                                strong
+                                className="text-sm wrap-break-word whitespace-normal capitalize"
+                              >
+                                {review.name}
+                              </Text>
+
+                              {review.orderId && (
+                                <Tag color="purple" className="text-[10px]! m-0!">
+                                  #{review.orderId}
+                                </Tag>
+                              )}
+                            </div>
+
+                            <Rate
+                              disabled
+                              value={review.rating}
+                              className="text-xs!"
+                            />
+
+                            <Paragraph className="mb-0! text-sm text-gray-600 line-clamp-3 min-h-[60px]">
+                              {review.comment}
+                            </Paragraph>
+
+                            <Text type="secondary" className="text-xs block text-right mt-2">
+                              {new Date(review.date).toLocaleDateString()}
                             </Text>
-
-                            {review.orderId && (
-                              <Tag color="purple" className="w-fit">
-                                Order ID: {review.orderId}
-                              </Tag>
-                            )}
-                          </div>
-
-                          <Rate
-                            disabled
-                            value={review.rating}
-                            className="text-xs md:text-base"
-                          />
-
-                          <Paragraph className="mb-1 line-clamp-3 text-sm">
-                            {review.comment}
-                          </Paragraph>
-
-                          <Text type="secondary" className="text-xs">
-                            {review.date}
-                          </Text>
-                        </Space>
-                      </AppCard>
-                    </div>
-                  ))}
-                </Carousel>
+                          </Space>
+                        </AppCard>
+                      </div>
+                    ))}
+                  </Carousel>
+                </div>
               )}
 
               <Divider />
 
               {/* ================= REVIEW FORM ================= */}
-              <Title level={5}>✍️ Write a Review</Title>
+              {!showReviewForm ? (
+                <div className="mt-6 flex justify-center items-center gap-2 flex-col ">
+                  <Text>আপনার মনস্ব মনোনীতি লিখুন</Text>
+                  <AppButton
+                    className="w-1/2 md:w-auto"
+                    type="primary"
+                    onClick={() => setShowReviewForm(true)}
+                  >
+                    Write a Review
+                  </AppButton>
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <div className="flex justify-between items-center mb-4 max-w-lg">
+                    <Title level={5} className="m-0!">
+                      ✍️ Write a Review
+                    </Title>
+                    <AppButton
+                      type="text"
+                      danger
+                      onClick={() => setShowReviewForm(false)}
+                    >
+                      Cancel
+                    </AppButton>
+                  </div>
 
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleReviewSubmit}
-                className="max-w-lg"
-              >
-                <Form.Item
-                  label="Your Name"
-                  name="name"
-                  rules={[{ required: true, message: "নাম লিখুন" }]}
-                >
-                  <AppInput placeholder="আপনার নাম" />
-                </Form.Item>
+                  <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleReviewSubmit}
+                    className="max-w-lg"
+                  >
+                    <Form.Item
+                      label="Your Name"
+                      name="name"
+                      rules={[{ required: true, message: "নাম লিখুন" }]}
+                    >
+                      <AppInput placeholder="আপনার নাম" />
+                    </Form.Item>
 
-                <Form.Item
-                  label="Order ID"
-                  name="orderId"
-                  rules={[{ required: true, message: "Order ID দিন" }]}
-                >
-                  <AppInput placeholder="যে Order ID দিয়ে কিনেছেন" />
-                </Form.Item>
+                    <Form.Item
+                      label="Order ID"
+                      name="orderId"
+                      rules={[{ required: true, message: "Order ID দিন" }]}
+                    >
+                      <AppInput placeholder="যে Order ID দিয়ে কিনেছেন" />
+                    </Form.Item>
 
-                <Form.Item
-                  label="Rating"
-                  name="rating"
-                  rules={[{ required: true, message: "Rating দিন" }]}
-                >
-                  <Rate />
-                </Form.Item>
+                    <Form.Item
+                      label="Rating"
+                      name="rating"
+                      rules={[{ required: true, message: "Rating দিন" }]}
+                    >
+                      <Rate />
+                    </Form.Item>
 
-                <Form.Item
-                  label="Your Review"
-                  name="comment"
-                  rules={[{ required: true, message: "রিভিউ লিখুন" }]}
-                >
-                  <AppInput.TextArea
-                    rows={4}
-                    placeholder="পণ্যের অভিজ্ঞতা লিখুন..."
-                  />
-                </Form.Item>
+                    <Form.Item
+                      label="Your Review"
+                      name="comment"
+                      rules={[{ required: true, message: "রিভিউ লিখুন" }]}
+                    >
+                      <AppInput.TextArea
+                        rows={4}
+                        placeholder="পণ্যের অভিজ্ঞতা লিখুন..."
+                      />
+                    </Form.Item>
 
-                <AppButton
-                  type="primary"
-                  htmlType="submit"
-                >
-                  Submit Review
-                </AppButton>
-              </Form>
+                    <AppButton type="primary" htmlType="submit">
+                      Submit Review
+                    </AppButton>
+                  </Form>
+                </div>
+              )}
             </AppCard>
           </div>
 

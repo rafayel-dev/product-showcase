@@ -14,7 +14,7 @@ export interface Product {
   imageUrls?: string[];
   stock?: number;
   hasDiscount?: boolean;
-  discountType?: 'flat' | 'percentage';
+  discountType?: "flat" | "percentage";
   discountValue?: number;
   specifications?: {
     brand?: string;
@@ -30,6 +30,8 @@ export interface Product {
     deliveryInfo?: string;
     returnPolicy?: string;
   };
+  reviews?: Review[];
+  numReviews?: number;
 }
 
 export interface CartItem extends Product {
@@ -38,8 +40,8 @@ export interface CartItem extends Product {
   selectedColor: string;
 }
 
-
 export interface Review {
+  _id?: string;
   name: string;
   orderId: string;
   rating: number;

@@ -74,9 +74,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="flex items-center justify-between mb-1">
         <Rate
           allowHalf
-          defaultValue={rating}
+          value={Number(rating || 0)}
           disabled
-          style={{ fontSize: 14 }}
+          className="text-sm! text-yellow-500!"
         />
         <div className="flex items-center gap-1">
           {hasDiscount && (
@@ -95,44 +95,52 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </h5>
       </Link>
       <div className="flex justify-between items-center">
-        <AppButton
-          type="primary"
-          className="font-bold!"
-          onClick={handleBuyNow}
-        >
-          <span className="font-nunito">Buy Now</span>
-        </AppButton>
-        <Tooltip
-          placement="top"
-          trigger="hover"
-          color="#8E51FF"
-          title={
-            isAdded ? (
-              <span
-                className="cursor-pointer"
-                onClick={openCart}
-              >
-                View Cart
-              </span>
-            ) : (
-              "Add to cart"
-            )
-          }
-        >
-          <span>
+        {product.status === "Out of Stock" ? (
+          <AppButton type="primary" disabled className="w-full! text-medium! font-semibold! text-red-500!">
+            Out of Stock
+          </AppButton>
+        ) : (
+          <>
             <AppButton
-              shape="circle"
-              disabled={isAdded}
-              className={`w-10! h-10! flex! items-center! justify-center! ${isAdded
-                ? "cursor-not-allowed! bg-violet-600! text-white!"
-                : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
-                }`}
-              onClick={handleAddToCart}
+              type="primary"
+              className="font-bold!"
+              onClick={handleBuyNow}
             >
-              {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
+              <span className="font-nunito">Buy Now</span>
             </AppButton>
-          </span>
-        </Tooltip>
+            <Tooltip
+              placement="top"
+              trigger="hover"
+              color="#8E51FF"
+              title={
+                isAdded ? (
+                  <span
+                    className="cursor-pointer"
+                    onClick={openCart}
+                  >
+                    View Cart
+                  </span>
+                ) : (
+                  "Add to cart"
+                )
+              }
+            >
+              <span>
+                <AppButton
+                  shape="circle"
+                  disabled={isAdded}
+                  className={`w-10! h-10! flex! items-center! justify-center! ${isAdded
+                    ? "cursor-not-allowed! bg-violet-600! text-white!"
+                    : "bg-black! text-white! hover:bg-gray-900! border-violet-600!"
+                    }`}
+                  onClick={handleAddToCart}
+                >
+                  {isAdded ? <FiCheck size={20} /> : <FiPlus size={22} />}
+                </AppButton>
+              </span>
+            </Tooltip>
+          </>
+        )}
       </div>
     </AppCard>
   );
