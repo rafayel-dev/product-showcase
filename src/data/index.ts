@@ -20,19 +20,20 @@ export const slides: Slide[] = [
 
 export const allProducts: Product[] = Array.from({ length: 50 }, (_, i) => ({
   // Increased total products for better infinite scroll demo
-  id: i + 1,
+  id: (i + 1).toString(),
   title: `Here are the biggest enterprise Product ${i + 1}`,
   image:
     i % 4 === 0
       ? product01
       : i % 4 === 1
-      ? product03
-      : i % 4 === 2
-      ? product02
-      : product00,
+        ? product03
+        : i % 4 === 2
+          ? product02
+          : product00,
   rating: Math.floor(Math.random() * 3) + 3,
   price: Math.floor(Math.random() * (1500 - 100 + 1)) + 500,
-  description: `This is a detailed description for Product ${
+  shortDescription: `Short description for Product ${i + 1}`,
+  longDescription: `This is a detailed description for Product ${
     i + 1
   }. It highlights the key features and benefits of the product, showcasing its quality and utility.`,
 }));

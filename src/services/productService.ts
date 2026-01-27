@@ -1,6 +1,6 @@
 import type { Product } from '../types';
 
-const API_URL = 'http://localhost:5000/api';
+export const API_URL = 'http://localhost:5000/api';
 
 const mapProduct = (item: any): Product => ({
   id: item.id || item._id,

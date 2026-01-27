@@ -92,7 +92,7 @@ const OrderSuccessPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 font-nunito">
-      <AppCard className="w-full max-w-2xl shadow-lg border-0! rounded-2xl overflow-hidden">
+      <AppCard className="w-full max-w-3xl shadow-lg border-0! rounded-2xl overflow-hidden">
         {/* Success Banner */}
         <div className="bg-green-50 p-6 text-center border-b border-green-100 mb-6">
           <div className="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl">
@@ -122,7 +122,7 @@ const OrderSuccessPage: React.FC = () => {
             {/* Customer Details */}
             <Col xs={24} md={12}>
               <div className="bg-gray-50 p-4 rounded-lg h-full">
-                <Text strong className="block mb-2 text-gray-800 bg-white inline-block px-2 py-1 rounded shadow-sm text-xs uppercase">Billing Details</Text>
+                <Text strong className="block mb-2 text-gray-800 bg-white inline-block px-2 py-1 rounded text-xs uppercase">Billing Details</Text>
                 <div className="space-y-1">
                   <Text strong className="block text-lg">{customerName}</Text>
                   <Text className="block text-gray-700">{customerPhone}</Text>
@@ -135,7 +135,7 @@ const OrderSuccessPage: React.FC = () => {
             {/* Order Summary */}
             <Col xs={24} md={12}>
               <div className="bg-violet-50 p-4 rounded-lg h-full">
-                <Text strong className="block mb-2 text-violet-800 bg-white inline-block px-2 py-1 rounded shadow-sm text-xs uppercase">Order Info</Text>
+                <Text strong className="block mb-2 text-violet-800 bg-white inline-block px-2 py-1 rounded text-xs uppercase">Order Info</Text>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <Text type="secondary">Date:</Text>
@@ -200,7 +200,7 @@ const OrderSuccessPage: React.FC = () => {
             <AppButton
               type="primary"
               size="large"
-              className="px-8 rounded-full shadow-lg hover:shadow-xl transition-all w-full"
+              className="px-8 rounded-full text-lg! shadow-lg hover:shadow-xl transition-all w-full"
               onClick={() => navigate("/")}
             >
               Continue Shopping
