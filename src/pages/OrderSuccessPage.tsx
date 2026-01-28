@@ -15,6 +15,8 @@ const { Title, Text } = Typography;
 
 type InvoiceItem = {
   title: string;
+  selectedColor?: string;
+  selectedSize?: string;
   price: number;
   quantity: number;
 };
@@ -40,6 +42,7 @@ const OrderSuccessPage: React.FC = () => {
     orderDate = new Date().toISOString(),
     deliveryCharge = 100,
     discount = 0,
+    paymentStatus = "Pending",
   } = state;
 
 
@@ -61,7 +64,16 @@ const OrderSuccessPage: React.FC = () => {
       title: "Item",
       dataIndex: "title",
       key: "title",
-      render: (text: string) => <span className="font-medium text-gray-700">{text}</span>
+      render: (_: string, record: InvoiceItem) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-gray-700">
+            {record.title}
+          </span>
+          <span className="text-gray-400 text-xs font-normal">
+            ({record.selectedColor || "N/A"}, {record.selectedSize || "N/A"})
+          </span>
+        </div>
+      ),
     },
     {
       title: "Price",
@@ -142,8 +154,12 @@ const OrderSuccessPage: React.FC = () => {
                     <Text strong>{new Date(orderDate).toLocaleDateString("en-GB")}</Text>
                   </div>
                   <div className="flex justify-between">
-                    <Text type="secondary">Payment:</Text>
+                    <Text type="secondary">Payment Method:</Text>
                     <Text strong className="uppercase text-violet-600">{paymentMethod}</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <Text type="secondary">Payment Status:</Text>
+                    <Text strong className="text-violet-600">{paymentStatus}</Text>
                   </div>
                   <div className="flex justify-between">
                     <Text type="secondary">Est. Delivery:</Text>
@@ -190,7 +206,7 @@ const OrderSuccessPage: React.FC = () => {
               )}
               <Divider className="my-2" />
               <div className="flex justify-between items-center text-lg">
-                <Text strong>Total Paid</Text>
+                <Text strong>Grand Total</Text>
                 <Text strong className="text-violet-600 text-xl">{formatCurrency(total)}</Text>
               </div>
             </div>

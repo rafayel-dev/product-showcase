@@ -429,7 +429,7 @@ const ProductDetailPage: React.FC = () => {
                     <div>
                       <Text strong>Size: </Text>
                       <Radio.Group
-                        className="ml-3"
+                        className="ml-2!"
                         value={size}
                         onChange={(e) => setSize(e.target.value)}
                       >
@@ -451,7 +451,7 @@ const ProductDetailPage: React.FC = () => {
                     <div>
                       <Text strong>Color: </Text>
                       <Radio.Group
-                        className="ml-3"
+                        className="ml-2!"
                         value={color}
                         onChange={(e) => setColor(e.target.value)}
                       >
@@ -471,7 +471,7 @@ const ProductDetailPage: React.FC = () => {
                   {/* QUANTITY */}
                   <div className="mb-6">
                     <Text strong>Quantity:</Text>
-                    <Space className="ml-3">
+                    <Space className="ml-2!">
                       <AppButton
                         className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<MinusOutlined />}
@@ -678,7 +678,7 @@ const ProductDetailPage: React.FC = () => {
                             size="small"
                             className="w-full"
                           >
-                            <div className="flex flex-wrap items-center justify-between gap-1 w-full">
+                            <div className="flex flex-wrap items-center justify-between gap-2 w-full mb-1">
                               <Text
                                 strong
                                 className="text-sm wrap-break-word whitespace-normal capitalize"
@@ -687,7 +687,7 @@ const ProductDetailPage: React.FC = () => {
                               </Text>
 
                               {review.orderId && (
-                                <Tag color="purple" className="text-[10px]! m-0!">
+                                <Tag color="purple" className="text-[10px]! m-0! border-0 bg-violet-50 text-violet-600">
                                   #{review.orderId}
                                 </Tag>
                               )}
@@ -696,8 +696,10 @@ const ProductDetailPage: React.FC = () => {
                             <Rate
                               disabled
                               value={review.rating}
-                              className="text-xs!"
+                              className="text-xs! text-amber-400"
                             />
+
+
 
                             <Paragraph className="mb-0! text-sm text-gray-600 line-clamp-3 min-h-[60px]">
                               {review.comment}

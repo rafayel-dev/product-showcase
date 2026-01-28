@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Select, Typography, Row, Col, Input } from "antd";
+import { Select, Typography, Row, Col, Input, Spin } from "antd";
 import ProductList from "../features/Product/ProductList";
 import LoadMoreButton from "../components/common/LoadMoreButton";
+import EmptyState from "../components/common/EmptyState";
 import { slides } from "../data";
 import { useProducts } from "../hooks/useProducts";
 import Slider from "../features/Slider/Slider";
@@ -98,7 +99,20 @@ const HomePage: React.FC = () => {
       </Row>
 
       {/* ================= PRODUCT LIST ================= */}
-      <ProductList products={displayedProducts} />
+      {loading && displayedProducts.length === 0 ? (
+        <div className="flex justify-center items-center py-32">
+          <Spin size="large" />
+        </div>
+      ) : displayedProducts.length === 0 ? (
+        <EmptyState
+          onReset={() => {
+            setSearchQuery("");
+            setSelectedCategory("all");
+          }}
+        />
+      ) : (
+        <ProductList products={displayedProducts} />
+      )}
 
       {/* ================= LOAD MORE BUTTON / LOADING INDICATOR ================= */}
       <LoadMoreButton

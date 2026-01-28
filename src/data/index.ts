@@ -21,6 +21,7 @@ export const slides: Slide[] = [
 export const allProducts: Product[] = Array.from({ length: 50 }, (_, i) => ({
   // Increased total products for better infinite scroll demo
   id: (i + 1).toString(),
+  sku: `SKU-${i + 1000}`,
   title: `Here are the biggest enterprise Product ${i + 1}`,
   image:
     i % 4 === 0
