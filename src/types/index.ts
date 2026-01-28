@@ -1,6 +1,7 @@
 export interface Slide {
   image: string;
   alt: string;
+  link?: string;
 }
 
 export interface Product {
@@ -9,6 +10,7 @@ export interface Product {
   image: string;
   rating: number;
   price: number;
+  sku: string;
   shortDescription: string;
   longDescription: string;
   imageUrls?: string[];
@@ -32,6 +34,7 @@ export interface Product {
   };
   reviews?: Review[];
   numReviews?: number;
+  category?: string; // Add category
 }
 
 export interface CartItem extends Product {

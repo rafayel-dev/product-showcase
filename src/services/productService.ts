@@ -5,6 +5,7 @@ export const API_URL = "http://localhost:5000/api";
 const mapProduct = (item: any): Product => ({
   id: item.id || item._id,
   title: item.productName || item.title,
+  sku: item.sku,
   image: item.imageUrl
     ? item.imageUrl.startsWith("http")
       ? item.imageUrl
@@ -25,6 +26,7 @@ const mapProduct = (item: any): Product => ({
   discountValue: item.discountValue,
   specifications: item.specifications,
   tags: item.tags,
+  category: item.category,
   status: item.status,
   productDetails: item.productDetails,
   reviews: item.reviews || [],
@@ -39,6 +41,18 @@ export const getProducts = async (): Promise<Product[]> => {
     return data.map(mapProduct);
   } catch (error) {
     console.error(error);
+    return [];
+  }
+};
+
+export const getCategories = async (): Promise<
+  { id: string; name: string }[]
+> => {
+  try {
+    const res = await fetch(`${API_URL}/categories`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
     return [];
   }
 };
@@ -99,6 +113,23 @@ export const getProductReviews = async (
     );
     if (!res.ok) return [];
     return await res.json();
+  } catch {
+    return [];
+  }
+};
+
+export const getSliders = async (): Promise<any[]> => {
+  try {
+    const res = await fetch(`${API_URL}/sliders`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.map((item: any) => ({
+      image: item.image.startsWith("http")
+        ? item.image
+        : `http://localhost:5000${item.image}`,
+      alt: item.title || "Slider Image",
+      link: item.link,
+    }));
   } catch {
     return [];
   }

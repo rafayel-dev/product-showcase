@@ -42,14 +42,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const itemToAdd: CartItem = {
-      ...product,
-      selectedSize: product.specifications?.availableSizes?.[0] || "M",
-      selectedColor: product.specifications?.availableColors?.[0] || "Default",
-      quantity: 1,
-      price: finalPrice,
-    };
-    addToCart(itemToAdd);
+    const defaultSize = product.specifications?.availableSizes?.[0] || "M";
+    const defaultColor = product.specifications?.availableColors?.[0] || "Default";
+
+    const isExactlyInCart = cartItems.some(
+      (item) =>
+        item.id === id &&
+        item.selectedSize === defaultSize &&
+        item.selectedColor === defaultColor
+    );
+
+    if (!isExactlyInCart) {
+      const itemToAdd: CartItem = {
+        ...product,
+        selectedSize: defaultSize,
+        selectedColor: defaultColor,
+        quantity: 1,
+        price: finalPrice,
+      };
+      addToCart(itemToAdd);
+    }
     navigate("/checkout");
   };
 
@@ -90,13 +102,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
       <Link to={`/product/${id}`}>
-        <h5 className="text-lg font-bold text-gray-900 hover:text-violet-500 transition-all duration-300 font-nunito truncate" title={title}>
+        <h5 className="text-medium font-bold text-gray-900 hover:text-violet-500 transition-all duration-300 font-nunito truncate" title={title}>
           {title}
         </h5>
       </Link>
       <div className="flex justify-between items-center">
         {product.status === "Out of Stock" ? (
-          <AppButton type="primary" disabled className="w-full! text-medium! font-semibold! text-red-500!">
+          <AppButton type="primary" disabled className="w-full! text-medium! font-semibold! text-red-200!">
             Out of Stock
           </AppButton>
         ) : (

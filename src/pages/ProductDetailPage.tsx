@@ -37,7 +37,7 @@ const { Title, Text, Paragraph } = Typography;
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -160,7 +160,16 @@ const ProductDetailPage: React.FC = () => {
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    const isInCart = cartItems.some(
+      (item) =>
+        item.id === product?.id &&
+        item.selectedSize === size &&
+        item.selectedColor === color
+    );
+
+    if (!isInCart) {
+      handleAddToCart();
+    }
     navigate("/checkout");
   };
 
@@ -214,6 +223,7 @@ const ProductDetailPage: React.FC = () => {
     const msg = `Hello, আমি এই পণ্যটি অর্ডার করতে চাই 👇
   
   Product: ${product.title}
+  SKU: ${product.sku}
   Size: ${size}
   Color: ${color}
   Quantity: ${qty}
@@ -225,7 +235,7 @@ const ProductDetailPage: React.FC = () => {
     );
   };
 
-  const productUrl = window.location.href; // Get current product URL
+  const productUrl = window.location.href;
   const productTitle = product.title;
 
   // Facebook Share

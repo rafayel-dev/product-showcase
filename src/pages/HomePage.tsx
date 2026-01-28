@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Select, Typography, Row, Col, Input } from "antd";
 import ProductList from "../features/Product/ProductList";
 import LoadMoreButton from "../components/common/LoadMoreButton";
@@ -5,13 +6,42 @@ import { slides } from "../data";
 import { useProducts } from "../hooks/useProducts";
 import Slider from "../features/Slider/Slider";
 import SEO from "../components/common/SEO";
+import { getSliders, getCategories } from "../services/productService";
+import type { Slide } from "../types";
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const HomePage: React.FC = () => {
-  const { displayedProducts, loading, hasMore, loadMoreProducts } =
-    useProducts();
+  const {
+    displayedProducts,
+    loading,
+    hasMore,
+    loadMoreProducts,
+    searchQuery,
+    setSearchQuery,
+    selectedCategory,
+    setSelectedCategory,
+  } = useProducts();
+  const [sliderData, setSliderData] = useState<Slide[]>(slides);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+      const data = await getSliders();
+      if (data && data.length > 0) {
+        setSliderData(data);
+      }
+    };
+    const fetchCats = async () => {
+      const cats = await getCategories();
+      setCategories(cats);
+    };
+    fetchSliders();
+    fetchCats();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 pt-8">
@@ -20,14 +50,14 @@ const HomePage: React.FC = () => {
         description="Discover our new arrivals and best selling products."
       />
       {/* ================= SLIDER ================= */}
-      <Slider slides={slides} />
+      <Slider slides={sliderData} />
 
       {/* ================= Title and Filter Dropdown ================= */}
       <Row gutter={[12, 12]} align="middle" style={{ marginTop: 20 }}>
         {/* Title */}
         <Col xs={24} md={8}>
           <Title
-          className="font-nunito"
+            className="font-nunito"
             level={1}
             style={{
               margin: 0,
@@ -44,15 +74,24 @@ const HomePage: React.FC = () => {
             <Input.Search
               placeholder="Search products..."
               allowClear
-              onSearch={(value) => console.log(value)}
+              value={searchQuery}
+              onSearch={(value) => setSearchQuery(value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="md:w-64! w-50!"
             />
 
-            <Select defaultValue="all" className="md:w-40! w-36!">
+            <Select
+              defaultValue="all"
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              className="md:w-40! w-36!"
+            >
               <Option value="all">All Categories</Option>
-              <Option value="womens">Women's Fashion</Option>
-              <Option value="mens">Men's Fashion</Option>
-              <Option value="fashion">Fashion</Option>
+              {categories.map((cat) => (
+                <Option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </Option>
+              ))}
             </Select>
           </div>
         </Col>
