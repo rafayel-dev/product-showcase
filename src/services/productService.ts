@@ -1,6 +1,9 @@
 import type { Product, Review } from "../types";
 
-export const API_URL = "http://localhost:5000/api";
+// Define Base URL for static assets (images)
+// export const BASE_URL = "http://10.10.89.32:5000";
+export const BASE_URL = "https://living-utility-pro-restored.trycloudflare.com";
+export const API_URL = `${BASE_URL}/api`;
 
 const mapProduct = (item: any): Product => ({
   id: item.id || item._id,
@@ -9,11 +12,11 @@ const mapProduct = (item: any): Product => ({
   image: item.imageUrl
     ? item.imageUrl.startsWith("http")
       ? item.imageUrl
-      : `http://localhost:5000${item.imageUrl}`
+      : `${BASE_URL}${item.imageUrl}`
     : "https://placehold.co/600x400",
   imageUrls:
     item.imageUrls?.map((url: string) =>
-      url.startsWith("http") ? url : `http://localhost:5000${url}`,
+      url.startsWith("http") ? url : `${BASE_URL}${url}`,
     ) || [],
   price: item.price,
   shortDescription:
@@ -33,12 +36,17 @@ const mapProduct = (item: any): Product => ({
   numReviews: item.numReviews || (item.reviews ? item.reviews.length : 0),
 });
 
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (
+  page: number = 1,
+  limit: number = 50,
+): Promise<Product[]> => {
   try {
-    const res = await fetch(`${API_URL}/products`);
+    const res = await fetch(
+      `${API_URL}/products?page=${page}&limit=${limit}&isPublished=true`,
+    );
     if (!res.ok) throw new Error("Failed to fetch products");
     const data = await res.json();
-    return data.map(mapProduct);
+    return (data.products || []).map(mapProduct);
   } catch (error) {
     console.error(error);
     return [];
@@ -126,7 +134,7 @@ export const getSliders = async (): Promise<any[]> => {
     return data.map((item: any) => ({
       image: item.image.startsWith("http")
         ? item.image
-        : `http://localhost:5000${item.image}`,
+        : `${BASE_URL}${item.image}`,
       alt: item.title || "Slider Image",
       link: item.link,
     }));

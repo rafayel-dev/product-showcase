@@ -10,6 +10,7 @@ import AppButton from "../components/common/AppButton";
 import AppCard from "../components/common/AppCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/price";
+import { API_URL } from "../services/productService";
 
 const { Title, Text } = Typography;
 
@@ -47,7 +48,6 @@ const OrderSuccessPage: React.FC = () => {
 
 
   const handleDownloadInvoice = () => {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
     window.open(
       `${API_URL}/orders/${orderId}/invoice`,
       "_blank",

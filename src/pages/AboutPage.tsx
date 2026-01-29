@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import AppButton from "../components/common/AppButton";
 import AppCard from "../components/common/AppCard";
 import { getAbout, type AboutData } from "../services/settingService";
+import { BASE_URL } from "../services/productService";
 
 const AboutPage: React.FC = () => {
   const [aboutData, setAboutData] = useState<AboutData | null>(null);
@@ -48,7 +49,7 @@ const AboutPage: React.FC = () => {
 
   const getImageUrl = (url?: string) => {
     if (!url) return "";
-    return url.startsWith("http") ? url : `http://localhost:5000${url}`;
+    return url.startsWith("http") ? url : `${BASE_URL}${url}`;
   };
 
   return (

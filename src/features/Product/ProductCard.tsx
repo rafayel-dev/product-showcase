@@ -108,7 +108,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </Link>
       <div className="flex justify-between items-center">
         {product.status === "Out of Stock" ? (
-          <AppButton type="primary" disabled className="w-full! text-medium! font-semibold! text-red-200!">
+          <AppButton type="default" disabled className="w-full! text-medium! font-semibold! text-violet-500!">
             Out of Stock
           </AppButton>
         ) : (

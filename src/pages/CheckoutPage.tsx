@@ -22,6 +22,7 @@ import { formatCurrency } from "../utils/price";
 import { useWatch } from "antd/es/form/Form";
 import { bangladeshDistricts } from "../data";
 import { FiX } from "react-icons/fi";
+import { API_URL } from "../services/productService";
 
 const { Title, Text } = Typography;
 
@@ -72,7 +73,6 @@ const CheckoutPage: React.FC = () => {
     setCheckingCoupon(true);
     setCouponMessage(null);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       const res = await fetch(`${API_URL}/coupons/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,7 +125,6 @@ const CheckoutPage: React.FC = () => {
         couponCode: appliedCoupon?.code
       };
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       const res = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,7 +159,7 @@ const CheckoutPage: React.FC = () => {
   /* ================= EMPTY CART ================= */
   if (!cartItems.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <AppCard className="w-full max-w-lg rounded-2xl shadow-sm text-center p-8">
           <div className="flex justify-center mb-4">
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={false} />
