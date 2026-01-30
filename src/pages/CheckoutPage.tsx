@@ -56,7 +56,7 @@ const CheckoutPage: React.FC = () => {
   const [couponCode, setCouponCode] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number; minOrderValue?: number } | null>(null);
 
   const subTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -66,6 +66,15 @@ const CheckoutPage: React.FC = () => {
   const deliveryFee = deliveryArea ? DELIVERY_CHARGE[deliveryArea] : 0;
   const discount = appliedCoupon ? appliedCoupon.discountAmount : 0;
   const totalAmount = subTotal + deliveryFee - discount;
+
+  // Re-validate coupon when subTotal changes
+  React.useEffect(() => {
+    if (appliedCoupon && appliedCoupon.minOrderValue && subTotal < appliedCoupon.minOrderValue) {
+      setAppliedCoupon(null);
+      setCouponMessage({ type: 'error', text: `Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.` });
+      toast.error(`Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.`);
+    }
+  }, [subTotal, appliedCoupon]);
 
   /* ================= COUPON ACTION ================= */
   const checkCoupon = async () => {
@@ -80,7 +89,11 @@ const CheckoutPage: React.FC = () => {
       });
       const data = await res.json();
       if (res.ok && data.valid) {
-        setAppliedCoupon({ code: data.code, discountAmount: data.discountAmount });
+        setAppliedCoupon({
+          code: data.code,
+          discountAmount: data.discountAmount,
+          minOrderValue: data.minOrderValue
+        });
         setCouponMessage({ type: 'success', text: `Coupon applied! You save ৳${data.discountAmount}` });
       } else {
         setAppliedCoupon(null);
