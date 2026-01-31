@@ -15,7 +15,6 @@ import {
   Divider,
   Popover,
   Form,
-  Carousel,
 } from "antd";
 import AppButton from "../components/common/AppButton";
 import AppCard from "../components/common/AppCard";
@@ -26,10 +25,13 @@ import {
   PlusOutlined,
   WhatsAppOutlined,
   ShareAltOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
+import AppSpin from "../components/common/AppSpin";
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -38,6 +40,8 @@ const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
+  const [isLoading, setIsLoading] = useState(true);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -50,6 +54,7 @@ const ProductDetailPage: React.FC = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [page, setPage] = useState(1);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
 
   /* ================= DISCOUNT LOGIC ================= */
@@ -67,6 +72,7 @@ const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       if (id) {
         const found = await getProductById(id);
         if (found) {
@@ -87,6 +93,7 @@ const ProductDetailPage: React.FC = () => {
           navigate("/404");
         }
       }
+      setIsLoading(false);
     };
     fetchData();
   }, [id, navigate]);
@@ -129,6 +136,14 @@ const ProductDetailPage: React.FC = () => {
       }
     }
   };
+
+
+
+  if (isLoading) {
+    return (
+     <AppSpin />
+    );
+  }
 
   if (!product) return null;
 
@@ -185,6 +200,7 @@ const ProductDetailPage: React.FC = () => {
   const handleReviewSubmit = async (values: ReviewFormValues) => {
     try {
       if (!product?.id) return;
+      setSubmittingReview(true);
 
       await createReview(product.id, {
         name: values.name,
@@ -216,6 +232,8 @@ const ProductDetailPage: React.FC = () => {
       form.resetFields();
     } catch (error: any) {
       toast.error(error.message || "রিভিউ দিতে সমস্যা হয়েছে");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -262,6 +280,30 @@ const ProductDetailPage: React.FC = () => {
     } catch (err) {
       toast.error("Failed to copy link.");
       console.error("Failed to copy: ", err);
+    }
+  };
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = container.clientWidth / (window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3);
+
+      if (direction === 'left') {
+        if (container.scrollLeft <= 10) {
+          // Loop to end
+          container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+        }
+      } else {
+        const remainingScroll = container.scrollWidth - (container.scrollLeft + container.clientWidth);
+        if (remainingScroll <= 10) {
+          // Loop to start
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        }
+      }
     }
   };
 
@@ -641,44 +683,62 @@ const ProductDetailPage: React.FC = () => {
               <Divider />
               {/* ================= CUSTOMER REVIEWS ================= */}
 
-              <Title id="review" level={4}>
-                ⭐ Customer Reviews
-              </Title>
+              <div className="flex justify-between items-center">
+                <Title id="review" level={4}>
+                  ⭐ Customer Reviews
+                </Title>
+                {reviews.length > 0 && (
+                  <div className="flex gap-2">
+                    <AppButton
+                      className="left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex bg-white/80 backdrop-blur-sm shadow-md border border-gray-100! hover:bg-violet-50! hover:text-violet-600! hover:border-violet-200!"
+                      shape="circle"
+                      icon={<LeftOutlined />}
+                      onClick={() => scroll('left')}
+                    />
+
+                    <AppButton
+                      className="right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex bg-white/80 backdrop-blur-sm shadow-md border border-gray-100! hover:bg-violet-50! hover:text-violet-600! hover:border-violet-200!"
+                      shape="circle"
+                      icon={<RightOutlined />}
+                      onClick={() => scroll('right')}
+                    />
+                  </div>
+                )}
+              </div>
               {reviews.length === 0 ? (
                 <Paragraph type="secondary">
                   এখনো কোনো রিভিউ নেই। প্রথম রিভিউ দিন!
                 </Paragraph>
               ) : (
-                <div className="-mx-2">
-                  <Carousel
-                    draggable
-                    swipeToSlide
-                    arrows
-                    dots={false}
-                    slidesToShow={3}
-                    slidesToScroll={1}
-                    afterChange={onCarouselChange}
-                    responsive={[
-                      {
-                        breakpoint: 1024,
-                        settings: { slidesToShow: 2 },
-                      },
-                      {
-                        breakpoint: 640,
-                        settings: { slidesToShow: 1 },
-                      },
-                    ]}
-                    className="review-carousel pb-8"
+                <div className="relative group">
+                  <div
+                    ref={scrollContainerRef}
+                    className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide scroll-smooth"
+                    onScroll={(e) => {
+                      const target = e.currentTarget;
+                      if (target.scrollLeft + target.clientWidth >= target.scrollWidth - 50) {
+                        if (!loadingReviews && hasMoreReviews && product?.id) {
+                          onCarouselChange(reviews.length - 1);
+                        }
+                      }
+                    }}
                   >
                     {reviews.map((review, index) => (
-                      <div key={index} className="px-2 h-full">
-                        <AppCard className="bg-gray-50 h-full overflow-hidden" bordered={false}>
+                      <div
+                        key={index}
+                        className="snap-center shrink-0 w-[81vw] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] h-full"
+                      >
+                        <AppCard
+                          className="bg-gray-50 h-full overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all"
+                          bordered={false}
+                          bodyStyle={{ padding: "16px" }}
+                        >
                           <Space
                             direction="vertical"
                             size="small"
                             className="w-full"
                           >
-                            <div className="flex flex-wrap items-center justify-between gap-2 w-full mb-1">
+                            <div className="flex flex-wrap items-center justify-between gap-1 w-full">
                               <Text
                                 strong
                                 className="text-sm wrap-break-word whitespace-normal capitalize"
@@ -699,8 +759,6 @@ const ProductDetailPage: React.FC = () => {
                               className="text-xs! text-amber-400"
                             />
 
-
-
                             <Paragraph className="mb-0! text-sm text-gray-600 line-clamp-3 min-h-[60px]">
                               {review.comment}
                             </Paragraph>
@@ -712,7 +770,13 @@ const ProductDetailPage: React.FC = () => {
                         </AppCard>
                       </div>
                     ))}
-                  </Carousel>
+
+                    {loadingReviews && (
+                      <div className="shrink-0 w-[50px] flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-600"></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -786,7 +850,7 @@ const ProductDetailPage: React.FC = () => {
                       />
                     </Form.Item>
 
-                    <AppButton type="primary" htmlType="submit">
+                    <AppButton type="primary" htmlType="submit" loading={submittingReview} disabled={submittingReview}>
                       Submit Review
                     </AppButton>
                   </Form>

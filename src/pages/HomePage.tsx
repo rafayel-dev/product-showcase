@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Select, Typography, Row, Col, Input, Spin } from "antd";
+import { Select, Typography, Row, Col, Input } from "antd";
 import ProductList from "../features/Product/ProductList";
 import LoadMoreButton from "../components/common/LoadMoreButton";
 import EmptyState from "../components/common/EmptyState";
@@ -9,6 +9,7 @@ import Slider from "../features/Slider/Slider";
 import SEO from "../components/common/SEO";
 import { getSliders, getCategories } from "../services/productService";
 import type { Slide } from "../types";
+import AppSpin from "../components/common/AppSpin";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -101,7 +102,7 @@ const HomePage: React.FC = () => {
       {/* ================= PRODUCT LIST ================= */}
       {loading && displayedProducts.length === 0 ? (
         <div className="flex justify-center items-center py-32">
-          <Spin size="large" />
+          <AppSpin />
         </div>
       ) : displayedProducts.length === 0 ? (
         <EmptyState
