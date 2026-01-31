@@ -71,8 +71,14 @@ const CheckoutPage: React.FC = () => {
   React.useEffect(() => {
     if (appliedCoupon && appliedCoupon.minOrderValue && subTotal < appliedCoupon.minOrderValue) {
       setAppliedCoupon(null);
-      setCouponMessage({ type: 'error', text: `Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.` });
-      toast.error(`Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.`);
+      // Only show error message if cart is not empty (e.g. user reduced quantity)
+      // If cart is empty (subTotal === 0), it usually means order placed or cart cleared, so silent remove.
+      if (subTotal > 0) {
+        setCouponMessage({ type: 'error', text: `Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.` });
+        toast.error(`Coupon removed. Minimum order ৳${appliedCoupon.minOrderValue} required.`);
+      } else {
+        setCouponMessage(null);
+      }
     }
   }, [subTotal, appliedCoupon]);
 
