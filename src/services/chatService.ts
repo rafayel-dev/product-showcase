@@ -5,6 +5,7 @@ export interface IMessage {
   sender: "user" | "admin";
   text: string;
   createdAt: string;
+  isRead?: boolean;
 }
 
 export interface IChat {
@@ -36,4 +37,10 @@ export const sendMessage = async (
     guestId,
   });
   return response.data;
+};
+
+export const markAdminMessagesAsRead = async (
+  chatId: string,
+): Promise<void> => {
+  await axios.put(`${API_URL}/chat/read/${chatId}`);
 };

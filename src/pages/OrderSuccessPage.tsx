@@ -11,6 +11,7 @@ import AppCard from "../components/common/AppCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/price";
 import { API_URL } from "../services/productService";
+import FloatingChat from "../components/FloatingChat/FloatingChat";
 
 const { Title, Text } = Typography;
 
@@ -103,6 +104,7 @@ const OrderSuccessPage: React.FC = () => {
   );
 
   return (
+    <>
     <div className="min-h-screen flex items-center justify-center p-4 font-nunito">
       <AppCard className="w-full max-w-3xl shadow-lg border-0! rounded-2xl overflow-hidden">
         {/* Success Banner */}
@@ -225,6 +227,8 @@ const OrderSuccessPage: React.FC = () => {
         </div>
       </AppCard>
     </div>
+    <FloatingChat />
+    </>
   );
 };
 

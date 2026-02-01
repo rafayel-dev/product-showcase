@@ -3,8 +3,8 @@ import { io } from "socket.io-client";
 import { MessageOutlined, SendOutlined, CloseOutlined, RobotOutlined } from '@ant-design/icons';
 import AppInput from '../common/AppInput';
 import AppButton from '../common/AppButton';
-import { Card } from 'antd';
-import { getActiveChat, sendMessage } from '../../services/chatService';
+import { Card, Tooltip, Badge } from 'antd';
+import { getActiveChat, sendMessage, markAdminMessagesAsRead } from '../../services/chatService';
 import type { IMessage } from '../../services/chatService';
 import { BASE_URL } from '../../services/productService';
 
@@ -18,7 +18,14 @@ const FloatingChat: React.FC = () => {
     const socketRef = useRef<any>(null);
     const chatIdRef = useRef<string | null>(null);
 
-    // Initialize Guest ID and load chat
+    // Extend IMessage locally to include isRead
+    interface LocalMessage extends IMessage {
+        isRead?: boolean;
+    }
+
+    // Check for unread messages from admin
+    const unreadCount = messages.filter((m: any) => m.sender === 'admin' && !m.isRead).length;
+
     useEffect(() => {
         let storedId = localStorage.getItem('guest_chat_id');
         if (!storedId) {
@@ -44,7 +51,7 @@ const FloatingChat: React.FC = () => {
             }
         });
 
-        socketRef.current.on("message_received", (newMsg: IMessage) => {
+        socketRef.current.on("message_received", (newMsg: LocalMessage) => {
             console.log("FloatingChat received message:", newMsg);
             setMessages(prev => {
                 // Prevent duplicate messages if any (simple check)
@@ -81,6 +88,7 @@ const FloatingChat: React.FC = () => {
         }
     };
 
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -88,6 +96,20 @@ const FloatingChat: React.FC = () => {
     useEffect(() => {
         scrollToBottom();
     }, [messages, isOpen]);
+
+    // Mark admin messages as read when chat is opened - persist to backend
+    useEffect(() => {
+        if (isOpen && messages.some((m: any) => m.sender === 'admin' && !m.isRead) && chatIdRef.current) {
+            // Mark locally
+            setMessages(prev => prev.map((m: any) =>
+                m.sender === 'admin' ? { ...m, isRead: true } : m
+            ));
+            // Persist to backend
+            markAdminMessagesAsRead(chatIdRef.current).catch(err => {
+                console.error("Failed to mark messages as read:", err);
+            });
+        }
+    }, [isOpen]);
 
     const toggleChat = () => setIsOpen(!isOpen);
 
@@ -98,7 +120,7 @@ const FloatingChat: React.FC = () => {
         setInputValue(''); // Clear immediately for UX
 
         // Optimistic UI update
-        const tempMsg: IMessage = { sender: 'user', text: textToSend, createdAt: new Date().toISOString() };
+        const tempMsg: LocalMessage = { sender: 'user', text: textToSend, createdAt: new Date().toISOString() };
         setMessages(prev => [...prev, tempMsg]);
 
         try {
@@ -112,18 +134,12 @@ const FloatingChat: React.FC = () => {
                     }
                 }
 
-                // We don't necessarily overwrite messages here to avoid jumping if optimistic update is fine.
-                // But for the FIRST message, we might want to sync.
                 if (messages.length === 0) {
                     setMessages(updatedChat.messages);
                 }
-
-                // Or if we want to ensure we have the server timestamp:
-                // setMessages(updatedChat.messages); // This might cause a flicker or scroll jump
             }
         } catch (error) {
             console.error("Failed to send message", error);
-            // Optionally remove the temp message or show error
         }
     };
 
@@ -192,21 +208,56 @@ const FloatingChat: React.FC = () => {
                 </div>
             )}
 
-            <div className="relative">
+            <div className="relative group">
                 {!isOpen && (
-                    <span className="absolute inset-0 rounded-full bg-violet-600/50 animate-ping"></span>
+                    <span className="absolute inset-0 rounded-full bg-violet-600/50 animate-ping group-hover:animate-none" />
                 )}
-                <AppButton
-                    type="primary"
-                    shape="circle"
-                    size="large"
-                    className="relative z-10 h-14! w-14! shadow-lg bg-violet-600! hover:bg-violet-700! border-none! flex items-center justify-center text-xl!"
-                    onClick={toggleChat}
-                    icon={isOpen ? <CloseOutlined className="text-white! text-2xl!" /> : <MessageOutlined className="text-white! text-2xl!" />}
-                />
+
+                <Tooltip
+                    color="purple"
+                    title={!isOpen && unreadCount > 0 ? "New Message!" : isOpen ? "" : "Chat Support"}
+                    placement="left"
+                    mouseEnterDelay={0.2}
+                    mouseLeaveDelay={0.2}
+                >
+                    <AppButton
+                        type="primary"
+                        shape="circle"
+                        size="large"
+                        onClick={toggleChat}
+                        icon={
+                            isOpen ? (
+                                <CloseOutlined className="text-white! text-2xl! transition-transform duration-200 group-hover:rotate-90" />
+                            ) : (
+                                <MessageOutlined className="text-white! text-2xl! transition-transform duration-200 group-hover:-rotate-12" />
+                            )
+                        }
+                        className="
+        relative z-10 
+        h-14! w-14!
+        bg-violet-600! border-none!
+        flex items-center justify-center
+        shadow-lg
+        transition-all duration-300
+
+        hover:bg-violet-700!
+        hover:scale-110
+        hover:shadow-2xl hover:shadow-violet-500/40
+        active:scale-95
+      "
+                    >
+                        <Badge
+                            className="z-50! absolute! -top-2! -right-2!"
+                            count={!isOpen ? unreadCount : 0}
+                        />
+                    </AppButton>
+                </Tooltip>
             </div>
+
+
         </div>
     );
 };
+
 
 export default FloatingChat;

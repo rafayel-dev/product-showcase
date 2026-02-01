@@ -23,6 +23,7 @@ import { useWatch } from "antd/es/form/Form";
 import { bangladeshDistricts } from "../data";
 import { FiX } from "react-icons/fi";
 import { API_URL } from "../services/productService";
+import FloatingChat from "../components/FloatingChat/FloatingChat";
 
 const { Title, Text } = Typography;
 
@@ -196,6 +197,7 @@ const CheckoutPage: React.FC = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <Title level={2}>Checkout</Title>
@@ -459,6 +461,8 @@ const CheckoutPage: React.FC = () => {
         </Form>
       </div>
     </div>
+    <FloatingChat />
+    </>
   );
 };
 
