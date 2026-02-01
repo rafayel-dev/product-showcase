@@ -150,9 +150,11 @@ const CheckoutPage: React.FC = () => {
         body: JSON.stringify(orderPayload)
       });
 
-      if (!res.ok) throw new Error('Failed to place order');
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to place order');
+      }
       toast.success("অর্ডার সফলভাবে প্লেস করা হয়েছে 🎉");
       clearCart();
       navigate("/order-success", {
@@ -169,9 +171,9 @@ const CheckoutPage: React.FC = () => {
           discount: discount,
         },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Order failed. Please try again.");
+      toast.error(err.message || "Order failed. Please try again.");
     }
   };
 
@@ -232,6 +234,7 @@ const CheckoutPage: React.FC = () => {
                         <InputNumber
                           className="ml-2! w-14!"
                           min={1}
+                          max={10}
                           value={item.quantity}
                           onChange={(value: number | null) =>
                             updateQuantity(item.id, value || 1, item.selectedSize, item.selectedColor)

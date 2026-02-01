@@ -31,7 +31,7 @@ const WhatsAppFloat: React.FC = () => {
           hover:bg-green-600 hover:scale-110"
       >
         {/* Pulse ring */}
-        <span className="absolute inset-0 rounded-full bg-green-500 opacity-30 animate-ping" />
+        <span className="absolute inset-0 rounded-full bg-green-600/50 animate-ping" />
 
         {/* Icon */}
         <FaWhatsapp

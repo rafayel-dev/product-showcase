@@ -39,9 +39,10 @@ const CartDrawer: React.FC = () => {
                   <Text type="secondary" className="block text-xs">
                     {item.selectedSize} | {item.selectedColor}
                   </Text>
-                  <Text type="secondary">${item.price} x </Text>
+                  <Text type="secondary">৳{item.price} x </Text>
                   <InputNumber
                     min={1}
+                    max={10}
                     value={item.quantity}
                     onChange={(value: number | null) => updateQuantity(item.id, value || 1, item.selectedSize, item.selectedColor)}
                     style={{ width: 50 }}

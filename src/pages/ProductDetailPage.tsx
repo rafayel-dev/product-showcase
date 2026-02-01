@@ -32,6 +32,8 @@ import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { useCart } from "../hooks/useCart";
 import toast from "../utils/toast";
 import AppSpin from "../components/common/AppSpin";
+import FloatingChat from "../components/FloatingChat/FloatingChat";
+
 
 
 const { Title, Text, Paragraph } = Typography;
@@ -141,7 +143,7 @@ const ProductDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-     <AppSpin />
+      <AppSpin />
     );
   }
 
@@ -523,7 +525,7 @@ const ProductDetailPage: React.FC = () => {
                       <AppButton
                         className="text-violet-500! hover:text-violet-600! hover:border-violet-500!"
                         icon={<PlusOutlined />}
-                        onClick={() => setQty(qty + 1)}
+                        onClick={() => setQty(Math.min(10, qty + 1))}
                       />
                     </Space>
                   </div>
@@ -867,6 +869,7 @@ const ProductDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+      <FloatingChat />
     </>
   );
 };

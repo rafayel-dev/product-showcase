@@ -52,11 +52,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           item.id === itemToAdd.id &&
             item.selectedSize === itemToAdd.selectedSize &&
             item.selectedColor === itemToAdd.selectedColor
-            ? { ...item, quantity: item.quantity + itemToAdd.quantity }
+            ? { ...item, quantity: Math.min(10, item.quantity + itemToAdd.quantity) }
             : item
         );
       } else {
-        return [...prevItems, itemToAdd];
+        return [...prevItems, { ...itemToAdd, quantity: Math.min(10, itemToAdd.quantity) }];
       }
     });
   };
@@ -87,13 +87,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateQuantity = (productId: string, quantity: number, size?: string, color?: string) => {
+    const validQuantity = Math.min(10, Math.max(1, quantity));
     setCartItems((prevItems) =>
       prevItems
         .map((item) => {
           if (item.id === productId &&
             (size ? item.selectedSize === size : true) &&
             (color ? item.selectedColor === color : true)) {
-            return { ...item, quantity: quantity };
+            return { ...item, quantity: validQuantity };
           }
           return item;
         })

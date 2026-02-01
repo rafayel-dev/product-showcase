@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer } from './layouts';
 import { CartProvider } from './context/CartContext';
 import { CartDrawer } from './components';
-import WhatsAppFloat from './components/whatsapp/WhatsAppFloat';
+// import WhatsAppFloat from './components/whatsapp/WhatsAppFloat';
 import AppSpin from './components/common/AppSpin';
 
 // Lazy load pages
@@ -36,7 +36,7 @@ function App() {
           </Suspense>
           <Footer />
           <CartDrawer />
-          <WhatsAppFloat />
+          {/* <WhatsAppFloat /> */}
         </div>
       </Router>
     </CartProvider>
