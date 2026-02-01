@@ -86,11 +86,14 @@ export const getRelatedProducts = async (
   limit: number = 5,
 ): Promise<Product[]> => {
   try {
-    const all = await getProducts();
-    return all
-      .filter((product) => product.id !== currentId)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, limit);
+    const response = await fetch(
+      `${API_URL}/products/${currentId}/related?limit=${limit}`,
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch related products");
+    }
+    const data = await response.json();
+    return data.map(mapProduct);
   } catch {
     return [];
   }

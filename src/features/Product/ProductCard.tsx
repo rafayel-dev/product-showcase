@@ -18,13 +18,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart, openCart, cartItems } = useCart();
   const navigate = useNavigate();
 
+  // Fallback for image if image is empty/undefined but imageUrls exists
+  const displayImage = image || product.imageUrls?.[0] || "/placeholder.png";
+
   const isAdded = cartItems.some((item) => item.id === id);
 
   const hasDiscount = !!product.hasDiscount;
   const finalPrice = hasDiscount
     ? (product.discountType === 'flat'
-      ? price - (product.discountValue || 0)
-      : price - (price * (product.discountValue || 0)) / 100)
+      ? Math.round(price - (product.discountValue || 0))
+      : Math.round(price - (price * (product.discountValue || 0)) / 100))
     : price;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -73,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       cover={
         <Link to={`/product/${id}`}>
           <div className="aspect-square overflow-hidden rounded-t-lg">
-            <img alt={title} src={image} className="object-cover w-full h-full transition-transform duration-300 hover:scale-102" />
+            <img alt={title} src={displayImage} className="object-cover w-full h-full transition-transform duration-300 hover:scale-102" />
             {hasDiscount && (
               <div className="absolute top-2 left-2 bg-violet-600/70 text-white backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded font-nunito">
                 🔥{product.discountType === 'flat' ? `৳${product.discountValue} Off` : `${product.discountValue}% Off`}

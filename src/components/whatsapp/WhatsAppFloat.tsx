@@ -1,3 +1,4 @@
+import { Tooltip } from "antd";
 import { FaWhatsapp } from "react-icons/fa";
 
 const WhatsAppFloat: React.FC = () => {
@@ -10,16 +11,9 @@ const WhatsAppFloat: React.FC = () => {
 
   return (
     <div className="fixed bottom-16 right-6 md:right-8 md:bottom-8 z-50 group flex items-center">
-      {/* Tooltip */}
-      <span
-        className="mr-3 whitespace-nowrap rounded-full bg-white px-3 py-1 text-sm font-medium text-gray-800 shadow-md
-        opacity-0 translate-x-3 group-hover:opacity-100 group-hover:translate-x-0
-        transition-all duration-300 ease-out"
-      >
-        Chat with us
-      </span>
 
       {/* Button */}
+      <Tooltip title="Chat with us" placement="left" color="#fff">
       <a
         href={whatsappLink}
         target="_blank"
@@ -31,7 +25,7 @@ const WhatsAppFloat: React.FC = () => {
           hover:bg-green-600 hover:scale-110"
       >
         {/* Pulse ring */}
-        <span className="absolute inset-0 rounded-full bg-green-600/50 animate-ping" />
+        <span className="absolute inset-0 rounded-full bg-green-600/50 animate-ping group-hover:animate-none" />
 
         {/* Icon */}
         <FaWhatsapp
@@ -39,6 +33,7 @@ const WhatsAppFloat: React.FC = () => {
           className="relative transition-transform duration-300 group-hover:rotate-12"
         />
       </a>
+      </Tooltip>
     </div>
   );
 };

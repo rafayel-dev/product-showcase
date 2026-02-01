@@ -65,8 +65,8 @@ const ProductDetailPage: React.FC = () => {
   const finalPrice = product
     ? (product.hasDiscount
       ? (product.discountType === 'flat'
-        ? product.price - (product.discountValue || 0)
-        : product.price - (product.price * (product.discountValue || 0)) / 100)
+        ? Math.round(product.price - (product.discountValue || 0))
+        : Math.round(product.price - (product.price * (product.discountValue || 0)) / 100))
       : product.price)
     : 0;
 
