@@ -5,8 +5,10 @@ export interface Slide {
 }
 
 export interface Product {
-  id: string; // Changed to string for MongoDB compatibility
+  id: string;
   title: string;
+  size?: string;
+  color?: string;
   image: string;
   rating: number;
   price: number;
